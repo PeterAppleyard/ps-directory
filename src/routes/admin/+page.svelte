@@ -14,6 +14,9 @@
 
 	let { data, form }: { data: PageData; form: ActionData } = $props()
 
+	const isAdmin = $derived(data.role === 'admin' || data.role === 'super_admin')
+	const isSuperAdmin = $derived(data.role === 'super_admin')
+
 	// ── Quick Add ────────────────────────────────────────────────────────────
 	let qaOpen = $state(false)
 	let qaInput = $state('')
@@ -97,8 +100,10 @@
 		if (e.key === 'Enter') quickAdd()
 	}
 
-	// Tab state
-	let activeTab = $state<'pending' | 'published'>('pending')
+	// Tab state — superusers start on Published since they can't see Pending
+	const initialTab: 'pending' | 'published' =
+		data.role === 'admin' || data.role === 'super_admin' ? 'pending' : 'published'
+	let activeTab = $state<'pending' | 'published'>(initialTab)
 
 	// Pending-specific state
 	let expandedNotes: Record<string, boolean> = $state({})
@@ -276,65 +281,43 @@
 				<p class="text-[10px] font-bold uppercase tracking-[0.35em] text-stone-500">Project Sydney</p>
 				<h1 class="font-black text-2xl uppercase tracking-tight text-white">Admin</h1>
 			</div>
-			{#if data.authed}
-				<div class="flex items-center gap-3">
+			<div class="flex items-center gap-3">
+				<span class="hidden border border-stone-700 px-2 py-1 text-[9px] font-bold uppercase tracking-widest text-stone-500 sm:block">
+					{data.role?.replace('_', ' ') ?? ''}
+				</span>
+				<a
+					href="/admin/import"
+					class="border border-stone-600 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-stone-400 transition hover:border-white hover:text-white"
+				>
+					Bulk Import
+				</a>
+				{#if isAdmin}
 					<a
-						href="/admin/import"
+						href="/admin/users"
 						class="border border-stone-600 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-stone-400 transition hover:border-white hover:text-white"
 					>
-						Bulk Import
+						Users
 					</a>
-					<form method="POST" action="?/logout" use:enhance>
-						<button
-							type="submit"
-							class="border border-stone-600 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-stone-400 transition hover:border-white hover:text-white"
-						>
-							Log Out
-						</button>
-					</form>
-				</div>
-			{/if}
-		</div>
-	</div>
-
-	{#if !data.authed}
-		<!-- Login -->
-		<div class="flex min-h-[80vh] items-center justify-center px-6">
-			<div class="w-full max-w-sm">
-				<p class="mb-2 text-[10px] font-bold uppercase tracking-[0.3em] text-stone-400">Access Required</p>
-				<h2 class="mb-8 font-black text-4xl uppercase tracking-tight text-stone-900">Sign In</h2>
-
-				<form method="POST" action="?/login" use:enhance class="space-y-5">
-					<div>
-						<label for="password" class="mb-1.5 block text-xs font-bold uppercase tracking-widest text-stone-600">
-							Password
-						</label>
-						<input
-							id="password"
-							name="password"
-							type="password"
-							required
-							autocomplete="current-password"
-							class="w-full border px-4 py-3 text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-stone-900
-								{form?.loginError ? 'border-red-400 bg-red-50' : 'border-stone-300 bg-white'}"
-						/>
-						{#if form?.loginError}
-							<p class="mt-1.5 text-xs text-red-500">{form.loginError}</p>
-						{/if}
-					</div>
-
+				{/if}
+				<a
+					href="/admin/settings"
+					class="border border-stone-600 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-stone-400 transition hover:border-white hover:text-white"
+				>
+					Settings
+				</a>
+				<form method="POST" action="?/logout" use:enhance>
 					<button
 						type="submit"
-						class="w-full border-2 border-stone-900 bg-stone-900 px-6 py-4 text-xs font-bold uppercase tracking-widest text-white transition hover:bg-white hover:text-stone-900"
+						class="border border-stone-600 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-stone-400 transition hover:border-white hover:text-white"
 					>
-						Enter
+						Log Out
 					</button>
 				</form>
 			</div>
 		</div>
+	</div>
 
-	{:else}
-		<div class="mx-auto max-w-6xl px-6 py-10">
+	<div class="mx-auto max-w-6xl px-6 py-10">
 
 			<!-- ── Quick Add ── -->
 			<div class="mb-8 border-2 border-stone-900 bg-white">
@@ -436,8 +419,9 @@
 				{/if}
 			</div>
 
-			<!-- Tabs -->
-			<div class="mb-8 flex items-baseline gap-8 border-b-2 border-stone-900 pb-0">
+		<!-- Tabs -->
+		<div class="mb-8 flex items-baseline gap-8 border-b-2 border-stone-900 pb-0">
+			{#if isAdmin}
 				<button
 					onclick={() => (activeTab = 'pending')}
 					class="pb-3 text-sm font-black uppercase tracking-tight transition
@@ -452,19 +436,20 @@
 						</span>
 					{/if}
 				</button>
-				<button
-					onclick={() => (activeTab = 'published')}
-					class="pb-3 text-sm font-black uppercase tracking-tight transition
-						{activeTab === 'published'
-							? 'border-b-2 border-stone-900 text-stone-900'
-							: 'text-stone-400 hover:text-stone-600'}"
-				>
-					Published
-					<span class="ml-1.5 text-[10px] font-bold text-stone-400">
-						{data.published.length}
-					</span>
-				</button>
-			</div>
+			{/if}
+			<button
+				onclick={() => { activeTab = 'published' }}
+				class="pb-3 text-sm font-black uppercase tracking-tight transition
+					{activeTab === 'published'
+						? 'border-b-2 border-stone-900 text-stone-900'
+						: 'text-stone-400 hover:text-stone-600'}"
+			>
+				Published
+				<span class="ml-1.5 text-[10px] font-bold text-stone-400">
+					{data.published.length}
+				</span>
+			</button>
+		</div>
 
 			<!-- ── PENDING TAB ── -->
 			{#if activeTab === 'pending'}
@@ -689,7 +674,6 @@
 			{/if}
 
 		</div>
-	{/if}
 
 </main>
 

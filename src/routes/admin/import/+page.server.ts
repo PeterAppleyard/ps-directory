@@ -1,12 +1,12 @@
 import { redirect } from '@sveltejs/kit'
-import { PRIVATE_ADMIN_PASSWORD } from '$env/static/private'
 import type { PageServerLoad } from './$types'
 
-const COOKIE = 'ps_admin'
+export const load: PageServerLoad = async ({ locals }) => {
+	if (!locals.user) redirect(303, '/admin/login')
 
-export const load: PageServerLoad = async ({ cookies }) => {
-	if (cookies.get(COOKIE) !== PRIVATE_ADMIN_PASSWORD) {
-		redirect(303, '/admin')
-	}
+	// Bulk import requires at least superuser role
+	const allowed = locals.role === 'superuser' || locals.role === 'admin' || locals.role === 'super_admin'
+	if (!allowed) redirect(303, '/admin')
+
 	return {}
 }

@@ -20,6 +20,7 @@
 	let description = $state('')
 	let listingUrl = $state('')
 	let soldListingUrl = $state('')
+	let submitterEmail = $state('')
 	let imageFiles: File[] = $state([])
 
 	// Geocoded coordinates
@@ -109,6 +110,7 @@
 		description = ''
 		listingUrl = ''
 		soldListingUrl = ''
+		submitterEmail = ''
 		imageFiles = []
 		originalSizes = []
 		errors = {}
@@ -149,7 +151,8 @@
 			latitude,
 			longitude,
 			listing_url: listingUrl.trim() || null,
-			sold_listing_url: soldListingUrl.trim() || null
+			sold_listing_url: soldListingUrl.trim() || null,
+			submitter_email: submitterEmail.trim() || null
 		}
 
 		console.log('[Submit] payload:', payload)
@@ -453,11 +456,35 @@
 					</div>
 				</fieldset>
 
-				<!-- IMAGES -->
-				<fieldset class="space-y-5">
-					<legend class="w-full border-b border-stone-200 pb-2 text-[10px] font-bold uppercase tracking-[0.3em] text-stone-400">
-						Photos
-					</legend>
+			<!-- YOUR DETAILS -->
+			<fieldset class="space-y-5">
+				<legend class="w-full border-b border-stone-200 pb-2 text-[10px] font-bold uppercase tracking-[0.3em] text-stone-400">
+					Your Details
+				</legend>
+
+				<div>
+					<label for="submitterEmail" class="mb-1.5 block text-xs font-bold uppercase tracking-widest text-stone-600">
+						Email Address
+					</label>
+					<input
+						id="submitterEmail"
+						type="email"
+						bind:value={submitterEmail}
+						placeholder="your@email.com"
+						autocomplete="email"
+						class="w-full border border-stone-300 bg-white px-4 py-2.5 text-sm text-stone-900 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-stone-900"
+					/>
+					<p class="mt-1 text-xs text-stone-400">
+						Optional — we'll notify you when your submission is reviewed. We won't share your email.
+					</p>
+				</div>
+			</fieldset>
+
+			<!-- IMAGES -->
+			<fieldset class="space-y-5">
+				<legend class="w-full border-b border-stone-200 pb-2 text-[10px] font-bold uppercase tracking-[0.3em] text-stone-400">
+					Photos
+				</legend>
 
 					<!-- Drop zone -->
 					<label

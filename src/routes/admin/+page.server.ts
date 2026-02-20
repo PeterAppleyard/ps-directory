@@ -1,40 +1,45 @@
 import { supabaseAdmin } from '$lib/supabase-admin'
-import { PRIVATE_ADMIN_PASSWORD } from '$env/static/private'
-import { fail } from '@sveltejs/kit'
+import { sendStatusUpdateEmail } from '$lib/server/email'
+import { fail, redirect } from '@sveltejs/kit'
 import type { Actions, PageServerLoad } from './$types'
-import type { Image } from '$lib/types'
+import type { House, Image } from '$lib/types'
 
-const COOKIE = 'ps_admin'
-const COOKIE_MAX_AGE = 60 * 60 * 8 // 8 hours
-
-function isAuthed(cookies: Parameters<PageServerLoad>[0]['cookies']): boolean {
-	return cookies.get(COOKIE) === PRIVATE_ADMIN_PASSWORD
+function requireRole(
+	role: App.Locals['role'],
+	minimum: 'superuser' | 'admin' | 'super_admin'
+): boolean {
+	const levels = { superuser: 1, admin: 2, super_admin: 3 }
+	return (levels[role ?? 'superuser'] ?? 0) >= levels[minimum]
 }
 
-export const load: PageServerLoad = async ({ cookies }) => {
-	if (!isAuthed(cookies)) {
-		return { authed: false, pending: [], published: [], imagesByHouse: {} }
+export const load: PageServerLoad = async ({ locals }) => {
+	if (!locals.user) redirect(303, '/admin/login')
+
+	const isAdmin = requireRole(locals.role, 'admin')
+
+	const publishedQuery = supabaseAdmin
+		.from('houses')
+		.select('*')
+		.eq('status', 'published')
+		.order('address_suburb')
+
+	let pending: House[] = []
+
+	if (isAdmin) {
+		const { data, error } = await supabaseAdmin
+			.from('houses')
+			.select('*')
+			.eq('status', 'pending')
+			.order('created_at', { ascending: false })
+		if (error) console.error('Admin load (pending) error:', error)
+		pending = (data ?? []) as House[]
 	}
 
-	const [{ data: pending, error: pendingErr }, { data: published, error: publishedErr }] =
-		await Promise.all([
-			supabaseAdmin
-				.from('houses')
-				.select('*')
-				.eq('status', 'pending')
-				.order('created_at', { ascending: false }),
-			supabaseAdmin
-				.from('houses')
-				.select('*')
-				.eq('status', 'published')
-				.order('address_suburb')
-		])
-
-	if (pendingErr) console.error('Admin load (pending) error:', pendingErr)
+	const { data: publishedData, error: publishedErr } = await publishedQuery
 	if (publishedErr) console.error('Admin load (published) error:', publishedErr)
+	const published = (publishedData ?? []) as House[]
 
-	const allHouses = [...(pending ?? []), ...(published ?? [])]
-
+	const allHouses = [...pending, ...published]
 	const imagesByHouse: Record<string, (Image & { url: string })[]> = {}
 
 	if (allHouses.length > 0) {
@@ -55,79 +60,91 @@ export const load: PageServerLoad = async ({ cookies }) => {
 	}
 
 	return {
-		authed: true,
-		pending: pending ?? [],
-		published: published ?? [],
+		role: locals.role,
+		user: { email: locals.user.email },
+		pending,
+		published,
 		imagesByHouse
 	}
 }
 
 export const actions: Actions = {
-	login: async ({ request, cookies }) => {
-		const form = await request.formData()
-		const password = form.get('password') as string
-
-		if (!password || password !== PRIVATE_ADMIN_PASSWORD) {
-			return fail(403, { loginError: 'Incorrect password.' })
-		}
-
-		cookies.set(COOKIE, password, {
-			path: '/',
-			maxAge: COOKIE_MAX_AGE,
-			httpOnly: true,
-			sameSite: 'strict',
-			secure: false // set to true in production behind HTTPS
-		})
+	logout: async ({ locals }) => {
+		await locals.supabase.auth.signOut()
+		redirect(303, '/admin/login')
 	},
 
-	logout: async ({ cookies }) => {
-		cookies.delete(COOKIE, { path: '/' })
-	},
-
-	approve: async ({ request, cookies }) => {
-		if (!isAuthed(cookies)) return fail(403, { error: 'Unauthorized' })
+	approve: async ({ request, locals, url }) => {
+		if (!requireRole(locals.role, 'admin')) return fail(403, { error: 'Unauthorized' })
 
 		const form = await request.formData()
 		const id = form.get('id') as string
 		const notes = (form.get('notes') as string)?.trim() || null
 
-		const { error } = await supabaseAdmin
+		const { data: house, error } = await supabaseAdmin
 			.from('houses')
 			.update({ status: 'published', verification_notes: notes })
 			.eq('id', id)
+			.select('address_street, address_suburb, submitter_email')
+			.single()
 
 		if (error) {
 			console.error('Approve error:', error)
 			return fail(500, { error: 'Failed to approve submission.' })
 		}
+
+		if (house?.submitter_email) {
+			await sendStatusUpdateEmail({
+				to: house.submitter_email,
+				address: house.address_street,
+				suburb: house.address_suburb,
+				status: 'published',
+				notes,
+				siteUrl: url.origin,
+				houseId: id
+			}).catch((e) => console.error('[email] approve notify failed:', e))
+		}
 	},
 
-	reject: async ({ request, cookies }) => {
-		if (!isAuthed(cookies)) return fail(403, { error: 'Unauthorized' })
+	reject: async ({ request, locals, url }) => {
+		if (!requireRole(locals.role, 'admin')) return fail(403, { error: 'Unauthorized' })
 
 		const form = await request.formData()
 		const id = form.get('id') as string
 		const notes = (form.get('notes') as string)?.trim() || null
 
-		const { error } = await supabaseAdmin
+		const { data: house, error } = await supabaseAdmin
 			.from('houses')
 			.update({ status: 'rejected', verification_notes: notes })
 			.eq('id', id)
+			.select('address_street, address_suburb, submitter_email')
+			.single()
 
 		if (error) {
 			console.error('Reject error:', error)
 			return fail(500, { error: 'Failed to reject submission.' })
 		}
+
+		if (house?.submitter_email) {
+			await sendStatusUpdateEmail({
+				to: house.submitter_email,
+				address: house.address_street,
+				suburb: house.address_suburb,
+				status: 'rejected',
+				notes,
+				siteUrl: url.origin,
+				houseId: id
+			}).catch((e) => console.error('[email] reject notify failed:', e))
+		}
 	},
 
-	deleteImage: async ({ request, cookies }) => {
-		if (!isAuthed(cookies)) return fail(403, { error: 'Unauthorized' })
+	deleteImage: async ({ request, locals }) => {
+		if (!requireRole(locals.role, 'superuser')) return fail(403, { error: 'Unauthorized' })
 
 		const form = await request.formData()
 		const imageId = form.get('image_id') as string
 		const storagePath = form.get('storage_path') as string
 
-		// Remove from storage (best effort — don't fail if file missing)
 		await supabaseAdmin.storage.from('house-images').remove([storagePath])
 
 		const { error } = await supabaseAdmin.from('images').delete().eq('id', imageId)
@@ -138,8 +155,8 @@ export const actions: Actions = {
 		}
 	},
 
-	edit: async ({ request, cookies }) => {
-		if (!isAuthed(cookies)) return fail(403, { error: 'Unauthorized' })
+	edit: async ({ request, locals }) => {
+		if (!requireRole(locals.role, 'superuser')) return fail(403, { error: 'Unauthorized' })
 
 		const form = await request.formData()
 		const id = form.get('id') as string
@@ -147,7 +164,6 @@ export const actions: Actions = {
 		const rawYear = form.get('year_built') as string
 		const rawLat = form.get('latitude') as string
 		const rawLng = form.get('longitude') as string
-
 		const rawListingUrl = (form.get('listing_url') as string)?.trim() || null
 		const rawSoldUrl = (form.get('sold_listing_url') as string)?.trim() || null
 

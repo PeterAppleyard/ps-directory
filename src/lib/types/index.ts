@@ -1,3 +1,5 @@
+export type UserRole = 'superuser' | 'admin' | 'super_admin'
+
 export interface House {
 	id: string
 	created_at: string
@@ -18,6 +20,7 @@ export interface House {
 	verification_notes: string | null
 	listing_url: string | null
 	sold_listing_url: string | null
+	submitter_email: string | null
 }
 
 export interface Image {
