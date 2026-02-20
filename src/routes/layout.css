@@ -1,0 +1,15 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+
+@theme {
+	--font-sans: 'Barlow Condensed', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+	--color-brand: #000000;
+	--color-accent: #5c4a3c;
+}
+
+@layer base {
+	h1, h2, h3, h4, h5, h6 {
+		font-weight: normal;
+	}
+}
