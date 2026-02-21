@@ -16,37 +16,28 @@
 	let inviteRole = $state('superuser')
 </script>
 
-<main class="min-h-screen bg-stone-50">
-	<!-- Header -->
-	<div class="border-b-2 border-stone-900 bg-stone-900 px-6 py-5">
-		<div class="mx-auto flex max-w-4xl items-center justify-between">
-			<div>
-				<p class="text-[10px] font-bold uppercase tracking-[0.35em] text-stone-500">Project Sydney</p>
-				<h1 class="font-black text-2xl uppercase tracking-tight text-white">User Management</h1>
-			</div>
-			<a
-				href="/admin"
-				class="border border-stone-600 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-stone-400 transition hover:border-white hover:text-white"
-			>
-				← Admin
-			</a>
-		</div>
+<div class="mx-auto max-w-3xl p-4 sm:p-6 space-y-6">
+
+	<!-- Page title -->
+	<div>
+		<h1 class="text-xl font-bold text-gray-900 dark:text-white">User Management</h1>
+		<p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Invite and manage admin team members</p>
 	</div>
 
-	<div class="mx-auto max-w-4xl px-6 py-10 space-y-10">
-
-		<!-- Invite form -->
-		<div class="border-2 border-stone-900 bg-white p-6">
-			<h2 class="mb-6 font-black text-xl uppercase tracking-tight text-stone-900">Invite User</h2>
-
+	<!-- Invite card -->
+	<div class="rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-hidden">
+		<div class="border-b border-gray-100 dark:border-slate-700 px-5 py-3">
+			<h2 class="text-sm font-semibold text-gray-700 dark:text-slate-300">Invite User</h2>
+		</div>
+		<div class="px-5 py-4">
 			{#if form?.inviteSent}
-				<div class="border border-green-300 bg-green-50 px-4 py-3 text-sm text-green-700">
+				<div class="rounded-md border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 px-4 py-3 text-sm text-green-700 dark:text-green-400">
 					Invite sent to <strong>{form.invitedEmail}</strong>. They'll receive an email to set their password.
 				</div>
 			{:else}
 				<form method="POST" action="?/invite" use:enhance class="flex flex-wrap gap-4">
 					<div class="flex-1 min-w-[200px]">
-						<label for="invite-email" class="mb-1.5 block text-xs font-bold uppercase tracking-widest text-stone-600">
+						<label for="invite-email" class="mb-1.5 block text-xs font-medium text-gray-600 dark:text-slate-400">
 							Email
 						</label>
 						<input
@@ -56,19 +47,19 @@
 							required
 							bind:value={inviteEmail}
 							placeholder="name@example.com"
-							class="w-full border border-stone-300 bg-white px-4 py-2.5 text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-stone-900"
+							class="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
 						/>
 					</div>
 
 					<div class="w-40">
-						<label for="invite-role" class="mb-1.5 block text-xs font-bold uppercase tracking-widest text-stone-600">
+						<label for="invite-role" class="mb-1.5 block text-xs font-medium text-gray-600 dark:text-slate-400">
 							Role
 						</label>
 						<select
 							id="invite-role"
 							name="role"
 							bind:value={inviteRole}
-							class="w-full border border-stone-300 bg-white px-4 py-2.5 text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-stone-900"
+							class="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
 						>
 							<option value="superuser">Superuser</option>
 							{#if isSuperAdmin}
@@ -80,7 +71,7 @@
 					<div class="flex items-end">
 						<button
 							type="submit"
-							class="border-2 border-stone-900 bg-stone-900 px-6 py-2.5 text-xs font-bold uppercase tracking-widest text-white transition hover:bg-white hover:text-stone-900"
+							class="rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-indigo-700"
 						>
 							Send Invite
 						</button>
@@ -92,97 +83,97 @@
 				</form>
 			{/if}
 		</div>
+	</div>
 
-		<!-- Role guide -->
-		<div class="border border-stone-200 bg-white p-6">
-			<h3 class="mb-4 font-black text-xs uppercase tracking-[0.25em] text-stone-400">Role Guide</h3>
-			<div class="grid gap-3 sm:grid-cols-3 text-sm">
-				<div>
-					<p class="font-bold text-stone-900">Superuser</p>
-					<p class="text-stone-500 text-xs mt-1">Quick Add, Bulk Import, edit listings</p>
-				</div>
-				<div>
-					<p class="font-bold text-stone-900">Admin</p>
-					<p class="text-stone-500 text-xs mt-1">All above + approve/reject, notification settings, add superusers</p>
-				</div>
-				<div>
-					<p class="font-bold text-stone-900">Super Admin</p>
-					<p class="text-stone-500 text-xs mt-1">All above + add admins, remove users</p>
-				</div>
-			</div>
+	<!-- Role guide -->
+	<div class="rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-hidden">
+		<div class="border-b border-gray-100 dark:border-slate-700 px-5 py-3">
+			<h2 class="text-sm font-semibold text-gray-700 dark:text-slate-300">Role Guide</h2>
 		</div>
-
-		<!-- Users list -->
-		<div class="border-2 border-stone-200 bg-white">
-			<div class="border-b border-stone-100 px-6 py-4">
-				<h2 class="font-black text-xl uppercase tracking-tight text-stone-900">
-					Team
-					<span class="ml-2 text-sm font-bold text-stone-400">{data.users.length}</span>
-				</h2>
+		<div class="grid gap-4 p-5 sm:grid-cols-3">
+			<div class="rounded-md bg-gray-50 dark:bg-slate-900/50 p-3">
+				<span class="inline-block rounded bg-slate-200 dark:bg-slate-700 px-2 py-0.5 text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">Superuser</span>
+				<p class="text-xs text-gray-500 dark:text-slate-400">Quick Add, Bulk Import, edit listings</p>
 			</div>
-
-			{#if data.users.length === 0}
-				<p class="px-6 py-12 text-center text-sm text-stone-400">No users yet.</p>
-			{:else}
-				<div class="divide-y divide-stone-100">
-					{#each data.users as user (user.id)}
-						<div class="flex flex-wrap items-center justify-between gap-4 px-6 py-4">
-							<div>
-								<p class="font-bold text-stone-900 text-sm">{user.email}</p>
-								<p class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mt-0.5">
-									{roleLabels[user.role] ?? user.role}
-									{#if user.id === data.currentUserId}
-										<span class="ml-2 text-stone-300">(you)</span>
-									{/if}
-								</p>
-							</div>
-
-							{#if user.id !== data.currentUserId}
-								<div class="flex items-center gap-2">
-									<!-- Role change -->
-									<form method="POST" action="?/setRole" use:enhance class="flex items-center gap-2">
-										<input type="hidden" name="user_id" value={user.id} />
-										<select
-											name="role"
-											value={user.role}
-											class="border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-600 focus:outline-none focus:ring-2 focus:ring-stone-900"
-										>
-											<option value="superuser">Superuser</option>
-											{#if isSuperAdmin}
-												<option value="admin">Admin</option>
-											{/if}
-										</select>
-										<button
-											type="submit"
-											class="border border-stone-200 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-stone-400 transition hover:border-stone-900 hover:text-stone-900"
-										>
-											Update
-										</button>
-									</form>
-
-									<!-- Remove (super_admin only) -->
-									{#if isSuperAdmin}
-										<form
-											method="POST"
-											action="?/removeUser"
-											use:enhance
-											onsubmit={(e) => { if (!confirm(`Remove ${user.email}?`)) e.preventDefault() }}
-										>
-											<input type="hidden" name="user_id" value={user.id} />
-											<button
-												type="submit"
-												class="border border-red-200 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-red-400 transition hover:border-red-500 hover:text-red-600"
-											>
-												Remove
-											</button>
-										</form>
-									{/if}
-								</div>
-							{/if}
-						</div>
-					{/each}
-				</div>
-			{/if}
+			<div class="rounded-md bg-gray-50 dark:bg-slate-900/50 p-3">
+				<span class="inline-block rounded bg-indigo-100 dark:bg-indigo-900/40 px-2 py-0.5 text-xs font-semibold text-indigo-700 dark:text-indigo-400 mb-2">Admin</span>
+				<p class="text-xs text-gray-500 dark:text-slate-400">All above + approve/reject, notifications, add superusers</p>
+			</div>
+			<div class="rounded-md bg-gray-50 dark:bg-slate-900/50 p-3">
+				<span class="inline-block rounded bg-purple-100 dark:bg-purple-900/40 px-2 py-0.5 text-xs font-semibold text-purple-700 dark:text-purple-400 mb-2">Super Admin</span>
+				<p class="text-xs text-gray-500 dark:text-slate-400">All above + add admins, remove users</p>
+			</div>
 		</div>
 	</div>
-</main>
+
+	<!-- Team list -->
+	<div class="rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-hidden">
+		<div class="border-b border-gray-100 dark:border-slate-700 px-5 py-3 flex items-center justify-between">
+			<h2 class="text-sm font-semibold text-gray-700 dark:text-slate-300">Team</h2>
+			<span class="rounded-full bg-gray-100 dark:bg-slate-700 px-2.5 py-0.5 text-xs font-medium text-gray-600 dark:text-slate-400">
+				{data.users.length}
+			</span>
+		</div>
+
+		{#if data.users.length === 0}
+			<p class="px-5 py-12 text-center text-sm text-gray-400 dark:text-slate-500">No users yet.</p>
+		{:else}
+			<div class="divide-y divide-gray-100 dark:divide-slate-700">
+				{#each data.users as user (user.id)}
+					<div class="flex flex-wrap items-center justify-between gap-4 px-5 py-4">
+						<div>
+							<p class="text-sm font-medium text-gray-900 dark:text-white">{user.email}</p>
+							<p class="text-xs text-gray-400 dark:text-slate-500 mt-0.5">
+								{roleLabels[user.role] ?? user.role}
+								{#if user.id === data.currentUserId}
+									<span class="ml-2 text-gray-300 dark:text-slate-600">(you)</span>
+								{/if}
+							</p>
+						</div>
+
+						{#if user.id !== data.currentUserId}
+							<div class="flex items-center gap-2">
+								<form method="POST" action="?/setRole" use:enhance class="flex items-center gap-2">
+									<input type="hidden" name="user_id" value={user.id} />
+									<select
+										name="role"
+										value={user.role}
+										class="rounded-md border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs text-gray-600 dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+									>
+										<option value="superuser">Superuser</option>
+										{#if isSuperAdmin}
+											<option value="admin">Admin</option>
+										{/if}
+									</select>
+									<button
+										type="submit"
+										class="rounded border border-gray-200 dark:border-slate-600 px-3 py-1.5 text-xs font-medium text-gray-500 dark:text-slate-400 transition hover:border-indigo-400 hover:text-indigo-600"
+									>
+										Update
+									</button>
+								</form>
+
+								{#if isSuperAdmin}
+									<form
+										method="POST"
+										action="?/removeUser"
+										use:enhance
+										onsubmit={(e) => { if (!confirm(`Remove ${user.email}?`)) e.preventDefault() }}
+									>
+										<input type="hidden" name="user_id" value={user.id} />
+										<button
+											type="submit"
+											class="rounded border border-red-200 dark:border-red-800 px-3 py-1.5 text-xs font-medium text-red-400 dark:text-red-500 transition hover:border-red-400 hover:text-red-600"
+										>
+											Remove
+										</button>
+									</form>
+								{/if}
+							</div>
+						{/if}
+					</div>
+				{/each}
+			</div>
+		{/if}
+	</div>
+</div>

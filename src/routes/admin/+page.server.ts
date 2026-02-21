@@ -59,12 +59,17 @@ export const load: PageServerLoad = async ({ locals }) => {
 		}
 	}
 
+	const missingPhotos = published.filter((h) => !imagesByHouse[h.id]?.length).length
+	const missingLocation = published.filter((h) => !h.latitude).length
+
 	return {
 		role: locals.role,
 		user: { email: locals.user.email },
 		pending,
 		published,
-		imagesByHouse
+		imagesByHouse,
+		missingPhotos,
+		missingLocation
 	}
 }
 

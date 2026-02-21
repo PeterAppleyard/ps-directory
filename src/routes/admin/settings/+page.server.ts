@@ -7,13 +7,19 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	const { data: profile } = await supabaseAdmin
 		.from('profiles')
-		.select('role, email_on_new_submission, email_on_approval')
+		.select('role, email_on_new_submission, email_on_approval, notification_frequency, theme')
 		.eq('id', locals.user.id)
 		.single()
 
 	return {
 		email: locals.user.email,
-		profile: profile ?? { role: locals.role, email_on_new_submission: true, email_on_approval: true }
+		profile: profile ?? {
+			role: locals.role,
+			email_on_new_submission: true,
+			email_on_approval: true,
+			notification_frequency: 'instant',
+			theme: 'system'
+		}
 	}
 }
 
@@ -24,18 +30,52 @@ export const actions: Actions = {
 		const form = await request.formData()
 		const emailOnNewSubmission = form.get('email_on_new_submission') === 'on'
 		const emailOnApproval = form.get('email_on_approval') === 'on'
+		const notificationFrequency = form.get('notification_frequency') as string
+
+		const validFrequencies = ['instant', 'daily', 'none']
+		const frequency = validFrequencies.includes(notificationFrequency)
+			? notificationFrequency
+			: 'instant'
 
 		const { error } = await supabaseAdmin
 			.from('profiles')
-			.update({ email_on_new_submission: emailOnNewSubmission, email_on_approval: emailOnApproval })
+			.update({
+				email_on_new_submission: emailOnNewSubmission,
+				email_on_approval: emailOnApproval,
+				notification_frequency: frequency
+			})
 			.eq('id', locals.user.id)
 
 		if (error) {
-			console.error('[settings] error:', error)
+			console.error('[settings] notification error:', error)
 			return fail(500, { error: 'Failed to save settings.' })
 		}
 
 		return { saved: true }
+	},
+
+	saveTheme: async ({ request, locals }) => {
+		if (!locals.user) return fail(403, { error: 'Unauthorized' })
+
+		const form = await request.formData()
+		const theme = form.get('theme') as string
+
+		const validThemes = ['light', 'dark', 'system']
+		if (!validThemes.includes(theme)) {
+			return fail(400, { error: 'Invalid theme.' })
+		}
+
+		const { error } = await supabaseAdmin
+			.from('profiles')
+			.update({ theme })
+			.eq('id', locals.user.id)
+
+		if (error) {
+			console.error('[settings] theme error:', error)
+			return fail(500, { error: 'Failed to save theme.' })
+		}
+
+		return { themeSaved: true }
 	},
 
 	changePassword: async ({ request, locals }) => {

@@ -227,25 +227,13 @@ Castle Hill,7 Example Rd,NSW,2154,Highline,1971,Renovated,Renovated kitchen.,,,`
 </script>
 
 <!-- ── Layout ──────────────────────────────────────────────────────────────── -->
-<main class="min-h-screen bg-stone-50">
-
-	<!-- Header -->
-	<div class="border-b-2 border-stone-900 bg-stone-900 px-6 py-5">
-		<div class="mx-auto flex max-w-5xl items-center justify-between">
-			<div>
-				<p class="text-[10px] font-bold uppercase tracking-[0.35em] text-stone-500">Project Sydney · Admin</p>
-				<h1 class="font-black text-2xl uppercase tracking-tight text-white">Bulk Import</h1>
-			</div>
-			<a
-				href="/admin"
-				class="border border-stone-600 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-stone-400 transition hover:border-white hover:text-white"
-			>
-				← Admin
-			</a>
-		</div>
+<div class="p-4 sm:p-6">
+	<div class="mb-6">
+		<h1 class="text-xl font-bold text-gray-900 dark:text-white">Bulk Import</h1>
+		<p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Import multiple listings via CSV</p>
 	</div>
 
-	<div class="mx-auto max-w-5xl px-6 py-10 space-y-10">
+	<div class="max-w-5xl space-y-8">
 
 		<!-- ── Step 1: paste CSV ── -->
 		{#if !parsed}
@@ -456,4 +444,4 @@ Castle Hill,7 Example Rd,NSW,2154,Highline,1971,Renovated,Renovated kitchen.,,,`
 		{/if}
 
 	</div>
-</main>
+</div>

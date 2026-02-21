@@ -10,6 +10,8 @@ declare global {
 				role: string
 				email_on_new_submission: boolean
 				email_on_approval: boolean
+				notification_frequency: 'instant' | 'daily' | 'none'
+				theme: 'light' | 'dark' | 'system'
 			} | null
 		}
 	}
