@@ -64,8 +64,15 @@
 	}
 </script>
 
+<style>
+	.admin-shell, .admin-shell :global(*) {
+		font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+			"Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+	}
+</style>
+
 <div class:dark={isDark}>
-	<div class="min-h-screen bg-gray-100 dark:bg-slate-900 text-slate-900 dark:text-slate-100">
+	<div class="admin-shell min-h-screen bg-gray-100 dark:bg-slate-900 text-slate-900 dark:text-slate-100">
 
 		<!-- ── TOP BAR ── -->
 		<header class="fixed inset-x-0 top-0 z-50 flex h-14 items-center gap-3 bg-slate-900 dark:bg-slate-950 px-4 shadow-lg">

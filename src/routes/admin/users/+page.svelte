@@ -47,7 +47,7 @@
 							required
 							bind:value={inviteEmail}
 							placeholder="name@example.com"
-							class="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+							class="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-500"
 						/>
 					</div>
 
@@ -59,7 +59,7 @@
 							id="invite-role"
 							name="role"
 							bind:value={inviteRole}
-							class="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+							class="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-500"
 						>
 							<option value="superuser">Superuser</option>
 							{#if isSuperAdmin}
@@ -71,7 +71,7 @@
 					<div class="flex items-end">
 						<button
 							type="submit"
-							class="rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-indigo-700"
+							class="rounded-md bg-slate-700 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800"
 						>
 							Send Invite
 						</button>
@@ -96,7 +96,7 @@
 				<p class="text-xs text-gray-500 dark:text-slate-400">Quick Add, Bulk Import, edit listings</p>
 			</div>
 			<div class="rounded-md bg-gray-50 dark:bg-slate-900/50 p-3">
-				<span class="inline-block rounded bg-indigo-100 dark:bg-indigo-900/40 px-2 py-0.5 text-xs font-semibold text-indigo-700 dark:text-indigo-400 mb-2">Admin</span>
+				<span class="inline-block rounded bg-slate-200 dark:bg-slate-700/40 px-2 py-0.5 text-xs font-semibold text-slate-700 dark:text-slate-400 mb-2">Admin</span>
 				<p class="text-xs text-gray-500 dark:text-slate-400">All above + approve/reject, notifications, add superusers</p>
 			</div>
 			<div class="rounded-md bg-gray-50 dark:bg-slate-900/50 p-3">
@@ -138,7 +138,7 @@
 									<select
 										name="role"
 										value={user.role}
-										class="rounded-md border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs text-gray-600 dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+										class="rounded-md border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs text-gray-600 dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500"
 									>
 										<option value="superuser">Superuser</option>
 										{#if isSuperAdmin}
@@ -147,7 +147,7 @@
 									</select>
 									<button
 										type="submit"
-										class="rounded border border-gray-200 dark:border-slate-600 px-3 py-1.5 text-xs font-medium text-gray-500 dark:text-slate-400 transition hover:border-indigo-400 hover:text-indigo-600"
+										class="rounded border border-gray-200 dark:border-slate-600 px-3 py-1.5 text-xs font-medium text-gray-500 dark:text-slate-400 transition hover:border-slate-500 hover:text-slate-700"
 									>
 										Update
 									</button>

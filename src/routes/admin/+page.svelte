@@ -341,7 +341,7 @@
 			<div class="border-b border-gray-100 dark:border-slate-700 px-5 py-3">
 				<h2 class="text-sm font-semibold text-gray-700 dark:text-slate-300">
 					Tasks
-					<span class="ml-2 rounded-full bg-indigo-100 dark:bg-indigo-900 px-2 py-0.5 text-xs font-medium text-indigo-700 dark:text-indigo-300">
+					<span class="ml-2 rounded-full bg-slate-200 dark:bg-slate-800 px-2 py-0.5 text-xs font-medium text-slate-700 dark:text-slate-400">
 						{tasks.length}
 					</span>
 				</h2>
@@ -378,7 +378,7 @@
 			class="flex w-full items-center justify-between px-5 py-4 text-left hover:bg-gray-50 dark:hover:bg-slate-700 transition"
 		>
 			<div class="flex items-center gap-3">
-				<span class="flex h-7 w-7 items-center justify-center rounded-md bg-indigo-600 text-white text-sm font-bold">+</span>
+				<span class="flex h-7 w-7 items-center justify-center rounded-md bg-slate-700 text-white text-sm font-bold">+</span>
 				<div>
 					<p class="text-sm font-semibold text-gray-900 dark:text-white">Quick Add</p>
 					<p class="text-xs text-gray-400 dark:text-slate-500">Type an address, geocode automatically</p>
@@ -405,7 +405,7 @@
 						onkeydown={qaKeydown}
 						placeholder="37 Gould Avenue St Ives Chase NSW 2075"
 						disabled={qaStatus === 'loading'}
-						class="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder:text-gray-300 dark:placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
+						class="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder:text-gray-300 dark:placeholder:text-slate-500 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500 disabled:opacity-50"
 					/>
 				</div>
 
@@ -418,8 +418,8 @@
 								onclick={() => { qaStyle = qaStyle === s ? '' : s }}
 								class="rounded-md border px-3 py-1.5 text-xs font-medium transition
 									{qaStyle === s
-										? 'border-indigo-600 bg-indigo-600 text-white'
-										: 'border-gray-200 dark:border-slate-600 text-gray-500 dark:text-slate-400 hover:border-indigo-400 hover:text-indigo-600'}"
+										? 'border-slate-700 bg-slate-700 text-white'
+										: 'border-gray-200 dark:border-slate-600 text-gray-500 dark:text-slate-400 hover:border-slate-500 hover:text-slate-700'}"
 							>
 								{s}
 							</button>
@@ -442,7 +442,7 @@
 						type="button"
 						onclick={quickAdd}
 						disabled={!qaInput.trim() || qaStatus === 'loading'}
-						class="rounded-md bg-indigo-600 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-40"
+						class="rounded-md bg-slate-700 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
 					>
 						{qaStatus === 'loading' ? 'Adding…' : 'Add House →'}
 					</button>
@@ -486,7 +486,7 @@
 					onclick={() => (activeTab = 'pending')}
 					class="flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition
 						{activeTab === 'pending'
-							? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
+							? 'border-slate-700 text-slate-700 dark:text-slate-400'
 							: 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300'}"
 				>
 					Pending Review
@@ -502,7 +502,7 @@
 				onclick={() => (activeTab = 'published')}
 				class="flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition
 					{activeTab === 'published'
-						? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
+						? 'border-slate-700 text-slate-700 dark:text-slate-400'
 						: 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300'}"
 			>
 				Published
@@ -558,7 +558,7 @@
 									<button
 										type="button"
 										onclick={() => toggleEdit(house)}
-										class="rounded border border-gray-200 dark:border-slate-600 px-3 py-1 text-xs font-medium text-gray-500 dark:text-slate-400 transition hover:border-indigo-400 hover:text-indigo-600"
+										class="rounded border border-gray-200 dark:border-slate-600 px-3 py-1 text-xs font-medium text-gray-500 dark:text-slate-400 transition hover:border-slate-500 hover:text-slate-700"
 									>
 										{editOpen[house.id] ? '− Close edit' : '+ Edit'}
 									</button>
@@ -615,7 +615,7 @@
 											bind:value={notesText[house.id]}
 											placeholder="Optional notes about this submission…"
 											rows="3"
-											class="mt-3 w-full resize-none rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder:text-gray-300 dark:placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+											class="mt-3 w-full resize-none rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder:text-gray-300 dark:placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-500"
 										></textarea>
 									{/if}
 								</div>
@@ -703,7 +703,7 @@
 									<button
 										type="button"
 										onclick={() => toggleEdit(house)}
-										class="rounded border border-gray-200 dark:border-slate-600 px-3 py-1 text-xs font-medium text-gray-500 dark:text-slate-400 transition hover:border-indigo-400 hover:text-indigo-600"
+										class="rounded border border-gray-200 dark:border-slate-600 px-3 py-1 text-xs font-medium text-gray-500 dark:text-slate-400 transition hover:border-slate-500 hover:text-slate-700"
 									>
 										{editOpen[house.id] ? '− Close' : '+ Edit'}
 									</button>
@@ -773,7 +773,7 @@
 						type="text"
 						bind:value={d.address_street}
 						oninput={() => scheduleGeocode(house.id)}
-						class="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+						class="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-500"
 					/>
 				</div>
 
@@ -785,7 +785,7 @@
 						type="text"
 						bind:value={d.address_suburb}
 						oninput={() => scheduleGeocode(house.id)}
-						class="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+						class="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-500"
 					/>
 				</div>
 				<div class="grid grid-cols-2 gap-3">
@@ -796,7 +796,7 @@
 							name="address_state"
 							bind:value={d.address_state}
 							oninput={() => scheduleGeocode(house.id)}
-							class="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+							class="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-500"
 						>
 							{#each AU_STATES as s}
 								<option value={s}>{s}</option>
@@ -812,7 +812,7 @@
 							maxlength="4"
 							bind:value={d.address_postcode}
 							oninput={() => scheduleGeocode(house.id)}
-							class="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+							class="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-500"
 						/>
 					</div>
 				</div>
@@ -823,7 +823,7 @@
 						id="{house.id}-style"
 						name="style"
 						bind:value={d.style}
-						class="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+						class="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-500"
 					>
 						<option value="">Unknown</option>
 						{#each STYLES as s}
@@ -840,7 +840,7 @@
 						min="1950"
 						max="1990"
 						bind:value={d.year_built}
-						class="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+						class="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-500"
 					/>
 				</div>
 
@@ -851,7 +851,7 @@
 						name="builder_name"
 						type="text"
 						bind:value={d.builder_name}
-						class="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+						class="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-500"
 					/>
 				</div>
 				<div>
@@ -860,7 +860,7 @@
 						id="{house.id}-condition"
 						name="condition"
 						bind:value={d.condition}
-						class="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+						class="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-500"
 					>
 						<option value="">Unknown</option>
 						{#each CONDITIONS as c}
@@ -876,7 +876,7 @@
 						name="description"
 						rows="4"
 						bind:value={d.description}
-						class="w-full resize-none rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+						class="w-full resize-none rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-500"
 					></textarea>
 				</div>
 
@@ -888,7 +888,7 @@
 						bind:value={d.listing_url}
 						oninput={() => { editData[house.id].listing_url = d.listing_url }}
 						placeholder="https://www.realestate.com.au/…"
-						class="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+						class="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-500"
 					/>
 				</div>
 				<div>
@@ -899,7 +899,7 @@
 						bind:value={d.sold_listing_url}
 						oninput={() => { editData[house.id].sold_listing_url = d.sold_listing_url }}
 						placeholder="https://www.domain.com.au/…"
-						class="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+						class="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-white placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-500"
 					/>
 				</div>
 			</div>
@@ -943,7 +943,7 @@
 					<button
 						type="submit"
 						disabled={editSaving[house.id]}
-						class="rounded-md bg-indigo-600 px-5 py-2 text-xs font-medium text-white transition hover:bg-indigo-700 disabled:opacity-50"
+						class="rounded-md bg-slate-700 px-5 py-2 text-xs font-medium text-white transition hover:bg-slate-800 disabled:opacity-50"
 					>
 						{editSaving[house.id] ? 'Saving…' : 'Save Changes'}
 					</button>
@@ -1009,7 +1009,7 @@
 
 			<label
 				for="{house.id}-upload"
-				class="flex cursor-pointer items-center gap-3 rounded-md border border-dashed border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-3 transition hover:border-indigo-400
+				class="flex cursor-pointer items-center gap-3 rounded-md border border-dashed border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-3 transition hover:border-slate-500
 					{imgUploading[house.id] ? 'pointer-events-none opacity-50' : ''}"
 			>
 				<svg class="h-5 w-5 shrink-0 text-gray-300 dark:text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">

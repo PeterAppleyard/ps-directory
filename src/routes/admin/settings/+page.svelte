@@ -47,7 +47,7 @@
 					{roleLabels[data.profile?.role ?? ''] ?? data.profile?.role}
 				</p>
 			</div>
-			<span class="rounded-full bg-indigo-100 dark:bg-indigo-900/40 px-3 py-1 text-xs font-medium text-indigo-700 dark:text-indigo-400">
+			<span class="rounded-full bg-slate-200 dark:bg-slate-700/40 px-3 py-1 text-xs font-medium text-slate-700 dark:text-slate-400">
 				{roleLabels[data.profile?.role ?? ''] ?? 'User'}
 			</span>
 		</div>
@@ -77,7 +77,7 @@
 								class="peer sr-only"
 							/>
 							<div class="rounded-lg border-2 p-3 text-center transition
-								peer-checked:border-indigo-600 peer-checked:bg-indigo-50 dark:peer-checked:bg-indigo-900/20
+								peer-checked:border-slate-700 peer-checked:bg-slate-100 dark:peer-checked:bg-slate-800/50
 								border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500">
 								<span class="block text-xl">{opt.icon}</span>
 								<span class="mt-1 block text-xs font-medium text-gray-700 dark:text-slate-300">{opt.label}</span>
@@ -90,7 +90,7 @@
 				</p>
 				<button
 					type="submit"
-					class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700"
+					class="rounded-md bg-slate-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
 				>
 					Save Theme
 				</button>
@@ -124,7 +124,7 @@
 										name="notification_frequency"
 										value={opt.value}
 										checked={data.profile?.notification_frequency === opt.value || (!data.profile?.notification_frequency && opt.value === 'instant')}
-										class="mt-0.5 h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500"
+										class="mt-0.5 h-4 w-4 text-slate-700 border-gray-300 focus:ring-slate-500"
 									/>
 									<div>
 										<p class="text-sm font-medium text-gray-900 dark:text-white">{opt.label}</p>
@@ -144,7 +144,7 @@
 								type="checkbox"
 								name="email_on_new_submission"
 								checked={data.profile?.email_on_new_submission}
-								class="mt-0.5 h-4 w-4 rounded border-gray-300 dark:border-slate-600 text-indigo-600 focus:ring-indigo-500"
+								class="mt-0.5 h-4 w-4 rounded border-gray-300 dark:border-slate-600 text-slate-700 focus:ring-slate-500"
 							/>
 							<div>
 								<p class="text-sm font-medium text-gray-900 dark:text-white">New submission alert</p>
@@ -159,7 +159,7 @@
 								type="checkbox"
 								name="email_on_approval"
 								checked={data.profile?.email_on_approval}
-								class="mt-0.5 h-4 w-4 rounded border-gray-300 dark:border-slate-600 text-indigo-600 focus:ring-indigo-500"
+								class="mt-0.5 h-4 w-4 rounded border-gray-300 dark:border-slate-600 text-slate-700 focus:ring-slate-500"
 							/>
 							<div>
 								<p class="text-sm font-medium text-gray-900 dark:text-white">Approval confirmation</p>
@@ -176,7 +176,7 @@
 
 					<button
 						type="submit"
-						class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700"
+						class="rounded-md bg-slate-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
 					>
 						Save Preferences
 					</button>
@@ -208,7 +208,7 @@
 							required
 							minlength="8"
 							autocomplete="new-password"
-							class="w-full rounded-md border px-4 py-2.5 text-sm text-gray-900 dark:text-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500
+							class="w-full rounded-md border px-4 py-2.5 text-sm text-gray-900 dark:text-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-500
 								{form?.passwordError ? 'border-red-400 bg-red-50 dark:bg-red-900/20' : 'border-gray-300 dark:border-slate-600 bg-white'}"
 						/>
 					</div>
@@ -224,7 +224,7 @@
 							required
 							minlength="8"
 							autocomplete="new-password"
-							class="w-full rounded-md border px-4 py-2.5 text-sm text-gray-900 dark:text-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500
+							class="w-full rounded-md border px-4 py-2.5 text-sm text-gray-900 dark:text-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-500
 								{form?.passwordError ? 'border-red-400 bg-red-50 dark:bg-red-900/20' : 'border-gray-300 dark:border-slate-600 bg-white'}"
 						/>
 						{#if form?.passwordError}
@@ -234,7 +234,7 @@
 
 					<button
 						type="submit"
-						class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700"
+						class="rounded-md bg-slate-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
 					>
 						Update Password
 					</button>

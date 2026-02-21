@@ -46,6 +46,7 @@
 {/if}
 
 <div class="flex min-h-screen flex-col">
+	{#if !$page.url.pathname.startsWith('/admin')}
 	<header class="border-b-2 border-stone-900 bg-white">
 		<div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
 			<!-- Wordmark -->
@@ -78,11 +79,13 @@
 			</nav>
 		</div>
 	</header>
+	{/if}
 
 	<div class="flex-1">
 		{@render children()}
 	</div>
 
+	{#if !$page.url.pathname.startsWith('/admin')}
 	<footer class="border-t-2 border-stone-900 bg-white px-6 py-8">
 		<div class="mx-auto flex max-w-6xl items-center justify-between">
 			<p class="text-[10px] uppercase tracking-[0.3em] text-stone-400">
@@ -93,4 +96,5 @@
 			</p>
 		</div>
 	</footer>
+	{/if}
 </div>
