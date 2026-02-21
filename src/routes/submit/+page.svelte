@@ -34,7 +34,7 @@
 	let errors: Record<string, string> = $state({})
 	let submitError = $state('')
 	let uploadProgress = $state(0)
-	let uploadStatus = $state('') // e.g. "Compressing 2 of 3…"
+	let uploadStatus = $state('') // e.g."Compressing 2 of 3…"
 	let debugInfo: string = $state('')
 
 	// Image preview URLs (revoked on cleanup)
@@ -229,8 +229,8 @@
 <main class="min-h-screen bg-stone-50">
 	<!-- Header -->
 	<section class="border-b border-stone-200 bg-white px-6 py-16 text-center">
-		<p class="mb-3 text-xs font-bold uppercase tracking-[0.3em] text-stone-400">Contribute</p>
-		<h2 class="font-black text-6xl uppercase tracking-tight text-stone-900 md:text-8xl">Submit a Home</h2>
+		<p class="mb-3 text-xs font-bold tracking-normal text-stone-400">Contribute</p>
+		<h2 class="font-black text-6xl tracking-tight text-stone-900 md:text-8xl">Submit a Home</h2>
 		<p class="mx-auto mt-4 max-w-xl text-stone-500">
 			Know a Pettit &amp; Sevitt home? Help us document it. All submissions are reviewed before
 			publishing.
@@ -241,21 +241,21 @@
 		{#if submitted}
 			<!-- Success -->
 			<div class="border-2 border-stone-900 p-12 text-center">
-				<p class="text-[10px] font-bold uppercase tracking-[0.3em] text-stone-400">Received</p>
-				<h3 class="mt-3 text-3xl font-black uppercase tracking-tight text-stone-900">Thank you</h3>
+				<p class="text-[10px] font-bold tracking-normal text-stone-400">Received</p>
+				<h3 class="mt-3 text-3xl font-black tracking-tight text-stone-900">Thank you</h3>
 				<p class="mx-auto mt-4 max-w-sm text-stone-500">
 					Your submission is under review and will appear in the directory once verified.
 				</p>
 				<div class="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
 					<a
 						href="/"
-						class="border-2 border-stone-900 px-6 py-3 text-xs font-bold uppercase tracking-widest text-stone-900 transition hover:bg-stone-900 hover:text-white"
+						class="border-2 border-stone-900 px-6 py-3 text-xs font-bold tracking-normal text-stone-900 transition hover:bg-stone-900 hover:text-white"
 					>
 						Back to Directory
 					</a>
 					<button
 						onclick={() => (submitted = false)}
-						class="border-2 border-stone-300 px-6 py-3 text-xs font-bold uppercase tracking-widest text-stone-500 transition hover:border-stone-900 hover:text-stone-900"
+						class="border-2 border-stone-300 px-6 py-3 text-xs font-bold tracking-normal text-stone-500 transition hover:border-stone-900 hover:text-stone-900"
 					>
 						Submit Another
 					</button>
@@ -266,12 +266,12 @@
 
 				<!-- ADDRESS -->
 				<fieldset class="space-y-5">
-					<legend class="w-full border-b border-stone-200 pb-2 text-[10px] font-bold uppercase tracking-[0.3em] text-stone-400">
+					<legend class="w-full border-b border-stone-200 pb-2 text-[10px] font-bold tracking-normal text-stone-400">
 						Address
 					</legend>
 
 					<div>
-						<label for="street" class="mb-1.5 block text-xs font-bold uppercase tracking-widest text-stone-600">
+						<label for="street" class="mb-1.5 block text-xs font-bold tracking-normal text-stone-600">
 							Street <span class="text-red-500">*</span>
 						</label>
 						<input
@@ -287,7 +287,7 @@
 
 					<div class="grid grid-cols-2 gap-4">
 						<div>
-							<label for="suburb" class="mb-1.5 block text-xs font-bold uppercase tracking-widest text-stone-600">
+							<label for="suburb" class="mb-1.5 block text-xs font-bold tracking-normal text-stone-600">
 								Suburb <span class="text-red-500">*</span>
 							</label>
 							<input
@@ -302,7 +302,7 @@
 						</div>
 
 						<div>
-							<label for="addressState" class="mb-1.5 block text-xs font-bold uppercase tracking-widest text-stone-600">
+							<label for="addressState" class="mb-1.5 block text-xs font-bold tracking-normal text-stone-600">
 								State
 							</label>
 							<select
@@ -318,7 +318,7 @@
 					</div>
 
 					<div class="max-w-[160px]">
-						<label for="postcode" class="mb-1.5 block text-xs font-bold uppercase tracking-widest text-stone-600">
+						<label for="postcode" class="mb-1.5 block text-xs font-bold tracking-normal text-stone-600">
 							Postcode <span class="text-red-500">*</span>
 						</label>
 						<input
@@ -335,11 +335,11 @@
 
 					<!-- Geocoding status -->
 					{#if geocoding}
-						<p class="text-[10px] font-bold uppercase tracking-widest text-stone-400">
+						<p class="text-[10px] font-bold tracking-normal text-stone-400">
 							Locating on map…
 						</p>
 					{:else if latitude !== null}
-						<p class="text-[10px] font-bold uppercase tracking-widest text-green-600">
+						<p class="text-[10px] font-bold tracking-normal text-green-600">
 							✓ Location found
 						</p>
 					{/if}
@@ -347,13 +347,13 @@
 
 				<!-- HOUSE DETAILS -->
 				<fieldset class="space-y-5">
-					<legend class="w-full border-b border-stone-200 pb-2 text-[10px] font-bold uppercase tracking-[0.3em] text-stone-400">
+					<legend class="w-full border-b border-stone-200 pb-2 text-[10px] font-bold tracking-normal text-stone-400">
 						House Details
 					</legend>
 
 					<div class="grid grid-cols-2 gap-4">
 						<div>
-							<label for="style" class="mb-1.5 block text-xs font-bold uppercase tracking-widest text-stone-600">
+							<label for="style" class="mb-1.5 block text-xs font-bold tracking-normal text-stone-600">
 								Style
 							</label>
 							<select
@@ -369,7 +369,7 @@
 						</div>
 
 						<div>
-							<label for="year" class="mb-1.5 block text-xs font-bold uppercase tracking-widest text-stone-600">
+							<label for="year" class="mb-1.5 block text-xs font-bold tracking-normal text-stone-600">
 								Year Built
 							</label>
 							<input
@@ -386,7 +386,7 @@
 					</div>
 
 					<div>
-						<label for="builder" class="mb-1.5 block text-xs font-bold uppercase tracking-widest text-stone-600">
+						<label for="builder" class="mb-1.5 block text-xs font-bold tracking-normal text-stone-600">
 							Builder Name
 						</label>
 						<input
@@ -399,7 +399,7 @@
 					</div>
 
 					<div>
-						<label for="condition" class="mb-1.5 block text-xs font-bold uppercase tracking-widest text-stone-600">
+						<label for="condition" class="mb-1.5 block text-xs font-bold tracking-normal text-stone-600">
 							Current Condition
 						</label>
 						<select
@@ -415,7 +415,7 @@
 					</div>
 
 					<div>
-						<label for="description" class="mb-1.5 block text-xs font-bold uppercase tracking-widest text-stone-600">
+						<label for="description" class="mb-1.5 block text-xs font-bold tracking-normal text-stone-600">
 							Description / Notes
 						</label>
 						<textarea
@@ -428,7 +428,7 @@
 					</div>
 
 					<div>
-						<label for="listingUrl" class="mb-1.5 block text-xs font-bold uppercase tracking-widest text-stone-600">
+						<label for="listingUrl" class="mb-1.5 block text-xs font-bold tracking-normal text-stone-600">
 							For Sale Listing URL
 						</label>
 						<input
@@ -442,7 +442,7 @@
 					</div>
 
 					<div>
-						<label for="soldListingUrl" class="mb-1.5 block text-xs font-bold uppercase tracking-widest text-stone-600">
+						<label for="soldListingUrl" class="mb-1.5 block text-xs font-bold tracking-normal text-stone-600">
 							Sold Record URL
 						</label>
 						<input
@@ -458,12 +458,12 @@
 
 			<!-- YOUR DETAILS -->
 			<fieldset class="space-y-5">
-				<legend class="w-full border-b border-stone-200 pb-2 text-[10px] font-bold uppercase tracking-[0.3em] text-stone-400">
+				<legend class="w-full border-b border-stone-200 pb-2 text-[10px] font-bold tracking-normal text-stone-400">
 					Your Details
 				</legend>
 
 				<div>
-					<label for="submitterEmail" class="mb-1.5 block text-xs font-bold uppercase tracking-widest text-stone-600">
+					<label for="submitterEmail" class="mb-1.5 block text-xs font-bold tracking-normal text-stone-600">
 						Email Address
 					</label>
 					<input
@@ -482,7 +482,7 @@
 
 			<!-- IMAGES -->
 			<fieldset class="space-y-5">
-				<legend class="w-full border-b border-stone-200 pb-2 text-[10px] font-bold uppercase tracking-[0.3em] text-stone-400">
+				<legend class="w-full border-b border-stone-200 pb-2 text-[10px] font-bold tracking-normal text-stone-400">
 					Photos
 				</legend>
 
@@ -494,7 +494,7 @@
 						<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-stone-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
 							<path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5V19a1.5 1.5 0 001.5 1.5h15A1.5 1.5 0 0021 19v-2.5M16.5 8.25L12 3.75m0 0L7.5 8.25M12 3.75V15" />
 						</svg>
-						<span class="text-xs font-bold uppercase tracking-widest text-stone-400">
+						<span class="text-xs font-bold tracking-normal text-stone-400">
 							Click to add photos
 						</span>
 						<span class="text-xs text-stone-300">JPG, PNG, WEBP — multiple files welcome</span>
@@ -516,7 +516,7 @@
 								<img src={preview} alt="Preview {i + 1}" class="h-full w-full object-cover" />
 								<div class="absolute bottom-0 left-0 right-0 flex items-end justify-between">
 									{#if i === 0}
-										<span class="bg-stone-900 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white">
+										<span class="bg-stone-900 px-1.5 py-0.5 text-[9px] font-bold tracking-normal text-white">
 											Primary
 										</span>
 									{:else}
@@ -549,7 +549,7 @@
 			{#if submitting && imageFiles.length > 0}
 				<div class="space-y-1.5">
 					<div class="flex justify-between text-xs text-stone-500">
-						<span class="uppercase tracking-widest">{uploadStatus || 'Processing…'}</span>
+						<span class=" tracking-normal">{uploadStatus || 'Processing…'}</span>
 						<span>{uploadProgress}%</span>
 					</div>
 					<div class="h-1 w-full bg-stone-200">
@@ -564,7 +564,7 @@
 
 			{#if debugInfo}
 				<div class="border border-orange-300 bg-orange-50 p-4">
-					<p class="mb-2 text-[10px] font-bold uppercase tracking-widest text-orange-600">Debug Info</p>
+					<p class="mb-2 text-[10px] font-bold tracking-normal text-orange-600">Debug Info</p>
 					<pre class="overflow-auto text-[11px] text-orange-900 whitespace-pre-wrap break-all">{debugInfo}</pre>
 				</div>
 			{/if}
@@ -572,7 +572,7 @@
 				<button
 					type="submit"
 					disabled={submitting}
-					class="relative w-full border-2 border-stone-900 bg-stone-900 px-6 py-4 text-xs font-bold uppercase tracking-widest text-white transition hover:bg-white hover:text-stone-900 disabled:cursor-not-allowed disabled:opacity-50"
+					class="relative w-full border-2 border-stone-900 bg-stone-900 px-6 py-4 text-xs font-bold tracking-normal text-white transition hover:bg-white hover:text-stone-900 disabled:cursor-not-allowed disabled:opacity-50"
 				>
 					{#if submitting}
 						<span class="flex items-center justify-center gap-2">

@@ -35,6 +35,9 @@
 <svelte:head>
 	<link rel="icon" href={favicon} />
 	<title>Project Sydney — A Pettit &amp; Sevitt Directory</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+	<link href="https://fonts.googleapis.com/css2?family=Fjalla+One&family=Rethink+Sans:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet" />
 </svelte:head>
 
 <!-- Navigation progress bar -->
@@ -51,10 +54,10 @@
 		<div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
 			<!-- Wordmark -->
 			<a href="/" class="flex flex-col leading-none group">
-				<span class="text-[9px] font-bold uppercase tracking-[0.35em] text-stone-400 group-hover:text-stone-600 transition-colors">
+				<span class="text-[9px] font-bold tracking-normal text-stone-400 group-hover:text-stone-600 transition-colors">
 					Project
 				</span>
-				<span class="text-2xl font-black uppercase tracking-tight text-stone-900">
+				<span class="text-2xl font-black tracking-tight text-stone-900">
 					Sydney
 				</span>
 			</a>
@@ -66,7 +69,7 @@
 						<li>
 							<a
 								href={link.href}
-							class="text-[10px] font-bold uppercase tracking-[0.25em] transition-colors
+							class="text-[10px] font-bold tracking-normal transition-colors
 								{$page.url.pathname === link.href
 									? 'text-accent underline underline-offset-4 decoration-2 decoration-accent'
 									: 'text-stone-400 hover:text-stone-900'}"
@@ -88,10 +91,10 @@
 	{#if !$page.url.pathname.startsWith('/admin')}
 	<footer class="border-t-2 border-stone-900 bg-white px-6 py-8">
 		<div class="mx-auto flex max-w-6xl items-center justify-between">
-			<p class="text-[10px] uppercase tracking-[0.3em] text-stone-400">
+			<p class="text-[10px] tracking-normal text-stone-400">
 				Project Sydney
 			</p>
-			<p class="text-[10px] uppercase tracking-[0.3em] text-stone-400">
+			<p class="text-[10px] tracking-normal text-stone-400">
 				A Pettit &amp; Sevitt Archive
 			</p>
 		</div>

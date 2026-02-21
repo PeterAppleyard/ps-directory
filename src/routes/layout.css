@@ -6,13 +6,14 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-	--font-sans: 'Barlow Condensed', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+	--font-sans: 'Rethink Sans', 'Helvetica Neue', Arial, sans-serif;
+	--font-heading: 'Fjalla One', 'Helvetica Neue', Arial, sans-serif;
 	--color-brand: #000000;
 	--color-accent: #5c4a3c;
 }
 
 @layer base {
 	h1, h2, h3, h4, h5, h6 {
-		font-weight: normal;
+		font-family: var(--font-heading);
 	}
 }
