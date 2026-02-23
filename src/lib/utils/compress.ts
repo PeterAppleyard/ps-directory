@@ -69,3 +69,9 @@ export function formatBytes(bytes: number): string {
 	if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`
 	return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
+
+/** Removes a leading street number (e.g. "37 Gould Ave" → "Gould Ave", "14A Main St" → "Main St") */
+export function stripStreetNumber(street: string | null | undefined): string {
+	if (!street) return ''
+	return street.replace(/^\d+\w*\s+/, '')
+}

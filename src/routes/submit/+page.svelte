@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { supabase } from '$lib/supabase'
 	import { compressImage, formatBytes } from '$lib/utils/compress'
-	import type { HouseStyle, HouseCondition } from '$lib/types'
+	import type { HouseCondition } from '$lib/types'
+	import type { PageData } from './$types'
 	import { PUBLIC_MAPBOX_TOKEN } from '$env/static/public'
 
-	const STYLES: HouseStyle[] = ['Lowline', 'Highline', 'Split-level', 'Other']
 	const CONDITIONS: HouseCondition[] = ['Original', 'Renovated', 'At Risk', 'Demolished']
+
+	let { data }: { data: PageData } = $props()
 	const AU_STATES = ['NSW', 'VIC', 'QLD', 'SA', 'WA', 'TAS', 'NT', 'ACT']
 
 	// Form fields
@@ -13,7 +15,7 @@
 	let suburb = $state('')
 	let addressState = $state('NSW')
 	let postcode = $state('')
-	let style: HouseStyle | '' = $state('')
+	let style = $state('')
 	let yearBuilt = $state('')
 	let builderName = $state('')
 	let condition: HouseCondition | '' = $state('')
@@ -361,10 +363,10 @@
 								bind:value={style}
 								class="w-full border border-stone-300 bg-white px-4 py-2.5 text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-stone-900"
 							>
-								<option value="">Unknown</option>
-								{#each STYLES as s}
-									<option value={s}>{s}</option>
-								{/each}
+							<option value="">Unknown</option>
+							{#each data.styles as s}
+								<option value={s.name}>{s.name}</option>
+							{/each}
 							</select>
 						</div>
 

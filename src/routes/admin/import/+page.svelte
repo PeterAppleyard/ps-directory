@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { PUBLIC_MAPBOX_TOKEN } from '$env/static/public'
-	import type { HouseStyle, HouseCondition } from '$lib/types'
+	import type { HouseCondition } from '$lib/types'
 
 	// ── Types ────────────────────────────────────────────────────────────────
 	type RowStatus = 'pending' | 'geocoding' | 'importing' | 'done' | 'error'
@@ -159,7 +159,7 @@
 			address_suburb: row.suburb,
 			address_state: row.state || 'NSW',
 			address_postcode: row.postcode || '',
-			style: (row.style as HouseStyle) || null,
+			style: row.style || null,
 			year_built: row.year ? parseInt(row.year) : null,
 			builder_name: null,
 			condition: (row.condition as HouseCondition) || null,
@@ -223,7 +223,7 @@
 
 	const TEMPLATE = `suburb,street,state,postcode,style,year,condition,description,listing_url,sold_listing_url
 Kellyville,42 Sample St,NSW,2155,Lowline,1967,Original,Original brick and timber.,https://realestate.com.au/…,
-Castle Hill,7 Example Rd,NSW,2154,Highline,1971,Renovated,Renovated kitchen.,,,`
+Castle Hill,7 Example Rd,NSW,2154,Split-level,1971,Renovated,Renovated kitchen.,,,`
 </script>
 
 <!-- ── Layout ──────────────────────────────────────────────────────────────── -->

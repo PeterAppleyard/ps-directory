@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms'
-	import type { House, Image, HouseStyle, HouseCondition } from '$lib/types'
+	import type { House, Image, HouseStyleRecord, HouseCondition } from '$lib/types'
 	import type { ActionData, PageData } from './$types'
 	import { PUBLIC_MAPBOX_TOKEN } from '$env/static/public'
 	import { supabase } from '$lib/supabase'
@@ -8,7 +8,6 @@
 
 	type ImageWithUrl = Image & { url: string }
 
-	const STYLES: HouseStyle[] = ['Lowline', 'Highline', 'Split-level', 'Other']
 	const CONDITIONS: HouseCondition[] = ['Original', 'Renovated', 'At Risk', 'Demolished']
 	const AU_STATES = ['NSW', 'VIC', 'QLD', 'SA', 'WA', 'TAS', 'NT', 'ACT']
 
@@ -19,6 +18,7 @@
 	// ── Derived stat counts ───────────────────────────────────────────────────
 	const statPublished = $derived(data.published.length)
 	const statPending = $derived(data.pending.length)
+	const statPendingStories = $derived(data.pendingStories?.length ?? 0)
 	const statMissingPhotos = $derived(data.missingPhotos ?? 0)
 	const statMissingLocation = $derived(data.missingLocation ?? 0)
 
@@ -26,6 +26,9 @@
 	const tasks = $derived([
 		...(isAdmin && statPending > 0
 			? [{ label: `${statPending} listing${statPending !== 1 ? 's' : ''} awaiting review`, href: '#pending', type: 'pending' as const }]
+			: []),
+		...(isAdmin && statPendingStories > 0
+			? [{ label: `${statPendingStories} property stor${statPendingStories !== 1 ? 'ies' : 'y'} awaiting approval`, href: '#stories', type: 'pending' as const }]
 			: []),
 		...(statMissingPhotos > 0
 			? [{ label: `${statMissingPhotos} published listing${statMissingPhotos !== 1 ? 's' : ''} missing photos`, href: '#published', type: 'warning' as const }]
@@ -35,10 +38,14 @@
 			: [])
 	])
 
+	// ── Styles manager ───────────────────────────────────────────────────────
+	let stylesOpen = $state(false)
+	let newStyleName = $state('')
+
 	// ── Quick Add ────────────────────────────────────────────────────────────
 	let qaOpen = $state(false)
 	let qaInput = $state('')
-	let qaStyle = $state<HouseStyle | ''>('')
+	let qaStyle = $state('')
 	let qaStatus = $state<'idle' | 'loading' | 'done' | 'error'>('idle')
 	let qaMessage = $state('')
 	let qaLastId = $state('')
@@ -370,6 +377,56 @@
 		</div>
 	{/if}
 
+	<!-- ── PROPERTY STORIES (Know this property?) ───────────────────────────── -->
+	{#if isAdmin && (data.pendingStories?.length ?? 0) > 0}
+		<div id="stories" class="rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-hidden">
+			<div class="border-b border-gray-100 dark:border-slate-700 px-5 py-3">
+				<h2 class="text-sm font-semibold text-gray-700 dark:text-slate-300">
+					Property stories
+					<span class="ml-2 rounded-full bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:text-amber-400">
+						{data.pendingStories.length} pending
+					</span>
+				</h2>
+				<p class="mt-1 text-xs text-gray-500 dark:text-slate-400">“Know this property?” submissions — approve to show on the listing.</p>
+			</div>
+			<ul class="divide-y divide-gray-100 dark:divide-slate-700">
+				{#each data.pendingStories as story (story.id)}
+					<li class="px-5 py-4">
+						<div class="flex flex-wrap items-start justify-between gap-4">
+							<div class="min-w-0 flex-1">
+								<p class="text-xs font-medium text-gray-400 dark:text-slate-500">
+									{story.author_name}{#if story.period_or_context} · {story.period_or_context}{/if}
+								</p>
+								{#if story.house}
+									<a
+										href="/house/{story.house.id}"
+										target="_blank"
+										rel="noopener noreferrer"
+										class="mt-0.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+									>
+										{story.house.address_suburb} →
+									</a>
+								{:else}
+									<p class="mt-0.5 text-xs text-gray-400 dark:text-slate-500">House not found (may be deleted)</p>
+								{/if}
+								<p class="mt-2 text-sm text-gray-700 dark:text-slate-300 leading-relaxed">{story.story}</p>
+							</div>
+							<form method="POST" action="/admin?/approveStory" use:enhance class="shrink-0">
+								<input type="hidden" name="id" value={story.id} />
+								<button
+									type="submit"
+									class="rounded-md bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700"
+								>
+									Approve
+								</button>
+							</form>
+						</div>
+					</li>
+				{/each}
+			</ul>
+		</div>
+	{/if}
+
 	<!-- ── QUICK ADD ──────────────────────────────────────────────────────── -->
 	<div id="quickadd" class="rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-hidden">
 		<button
@@ -412,18 +469,18 @@
 				<div>
 					<p class="mb-2 text-xs font-medium text-gray-600 dark:text-slate-400">Style</p>
 					<div class="flex flex-wrap gap-2">
-						{#each STYLES as s}
+						{#each data.styles as s}
 							<button
 								type="button"
-								onclick={() => { qaStyle = qaStyle === s ? '' : s }}
-								class="rounded-md border px-3 py-1.5 text-xs font-medium transition
-									{qaStyle === s
-										? 'border-slate-700 bg-slate-700 text-white'
-										: 'border-gray-200 dark:border-slate-600 text-gray-500 dark:text-slate-400 hover:border-slate-500 hover:text-slate-700'}"
-							>
-								{s}
-							</button>
-						{/each}
+								onclick={() => { qaStyle = qaStyle === s.name ? '' : s.name }}
+							class="rounded-md border px-3 py-1.5 text-xs font-medium transition
+								{qaStyle === s.name
+									? 'border-slate-700 bg-slate-700 text-white'
+									: 'border-gray-200 dark:border-slate-600 text-gray-500 dark:text-slate-400 hover:border-slate-500 hover:text-slate-700'}"
+						>
+							{s.name}
+						</button>
+					{/each}
 						<button
 							type="button"
 							onclick={() => { qaStyle = '' }}
@@ -685,6 +742,11 @@
 									</p>
 								</div>
 								<div class="flex flex-wrap items-center gap-2">
+									{#if house.is_featured}
+										<span class="rounded bg-amber-100 dark:bg-amber-900/40 px-2 py-1 text-xs font-medium text-amber-700 dark:text-amber-400">
+											★ Featured
+										</span>
+									{/if}
 									{#if house.year_built}
 										<span class="rounded bg-gray-100 dark:bg-slate-700 px-2 py-1 text-xs text-gray-600 dark:text-slate-400">
 											{house.year_built}
@@ -699,6 +761,17 @@
 										<span class="rounded bg-green-100 dark:bg-green-900/40 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-400">
 											✓ Saved
 										</span>
+									{/if}
+									{#if !house.is_featured}
+										<form method="POST" action="?/setFeatured" use:enhance>
+											<input type="hidden" name="id" value={house.id} />
+											<button
+												type="submit"
+												class="rounded border border-amber-200 dark:border-amber-800 px-3 py-1 text-xs font-medium text-amber-600 dark:text-amber-500 transition hover:bg-amber-50 dark:hover:bg-amber-900/30"
+											>
+												☆ Set featured
+											</button>
+										</form>
 									{/if}
 									<button
 										type="button"
@@ -726,6 +799,89 @@
 				</div>
 			{/if}
 		{/if}
+
+	<!-- ── STYLES MANAGER ── -->
+	<div class="rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+		<button
+			type="button"
+			onclick={() => (stylesOpen = !stylesOpen)}
+			class="flex w-full items-center justify-between px-6 py-4 text-left"
+		>
+			<div>
+				<h2 class="font-semibold text-gray-900 dark:text-white">House Styles</h2>
+				<p class="mt-0.5 text-xs text-gray-400 dark:text-slate-500">{data.styles.length} style{data.styles.length !== 1 ? 's' : ''} defined</p>
+			</div>
+			<span class="text-sm text-gray-400 dark:text-slate-500">{stylesOpen ? '▲' : '▼'}</span>
+		</button>
+
+		{#if stylesOpen}
+			<div class="border-t border-gray-100 dark:border-slate-700 px-6 py-5 space-y-4">
+
+				{#if form?.styleError}
+					<p class="rounded bg-red-50 dark:bg-red-900/30 px-3 py-2 text-xs text-red-600 dark:text-red-400">
+						{form.styleError}
+					</p>
+				{/if}
+				{#if form?.styleAdded}
+					<p class="rounded bg-green-50 dark:bg-green-900/30 px-3 py-2 text-xs text-green-700 dark:text-green-400">
+						✓ "{form.styleAdded}" added
+					</p>
+				{/if}
+
+				<!-- Existing styles -->
+				<ul class="divide-y divide-gray-100 dark:divide-slate-700">
+					{#each data.styles as style (style.id)}
+						<li class="flex items-center justify-between py-2">
+							<span class="text-sm font-medium text-gray-800 dark:text-slate-200">{style.name}</span>
+							{#if isAdmin}
+								<form method="POST" action="?/deleteStyle" use:enhance>
+									<input type="hidden" name="id" value={style.id} />
+									<button
+										type="submit"
+										class="text-xs text-gray-300 dark:text-slate-600 transition hover:text-red-500 dark:hover:text-red-400"
+										onclick={(e) => {
+											if (!confirm(`Delete "${style.name}"? This cannot be undone.`)) e.preventDefault()
+										}}
+									>
+										Remove
+									</button>
+								</form>
+							{/if}
+						</li>
+					{/each}
+				</ul>
+
+				<!-- Add new style -->
+				<form
+					method="POST"
+					action="?/addStyle"
+					class="flex gap-2"
+					use:enhance={({ formElement }) => {
+						return ({ update }) => {
+							update()
+							newStyleName = ''
+							formElement.reset()
+						}
+					}}
+				>
+					<input
+						type="text"
+						name="name"
+						bind:value={newStyleName}
+						placeholder="e.g. Mk V Deluxe"
+						required
+						class="flex-1 rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-3 py-1.5 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500"
+					/>
+					<button
+						type="submit"
+						class="rounded-md bg-slate-800 dark:bg-slate-700 px-4 py-1.5 text-xs font-semibold text-white transition hover:bg-slate-700 dark:hover:bg-slate-600"
+					>
+						Add style
+					</button>
+				</form>
+			</div>
+		{/if}
+	</div>
 
 	</div>
 </div>
@@ -825,10 +981,10 @@
 						bind:value={d.style}
 						class="w-full rounded-md border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-500"
 					>
-						<option value="">Unknown</option>
-						{#each STYLES as s}
-							<option value={s}>{s}</option>
-						{/each}
+					<option value="">Unknown</option>
+					{#each data.styles as s}
+						<option value={s.name}>{s.name}</option>
+					{/each}
 					</select>
 				</div>
 				<div>

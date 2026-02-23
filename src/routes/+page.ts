@@ -5,7 +5,7 @@ import type { PageLoad } from './$types'
 
 export const load: PageLoad = async () => {
 	const [{ data: houses, error: housesError }, { data: primaryImages }] = await Promise.all([
-		supabase.from('houses').select('*').eq('status', 'published').order('address_suburb'),
+		supabase.from('houses').select('*').eq('status', 'published').order('is_featured', { ascending: false }).order('address_suburb'),
 		supabase.from('images').select('house_id, storage_path').eq('is_primary', true)
 	])
 

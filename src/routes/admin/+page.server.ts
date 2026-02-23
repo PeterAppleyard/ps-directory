@@ -2,7 +2,7 @@ import { supabaseAdmin } from '$lib/supabase-admin'
 import { sendStatusUpdateEmail } from '$lib/server/email'
 import { fail, redirect } from '@sveltejs/kit'
 import type { Actions, PageServerLoad } from './$types'
-import type { House, Image } from '$lib/types'
+import type { House, Image, HouseStyleRecord, PropertyStory } from '$lib/types'
 
 function requireRole(
 	role: App.Locals['role'],
@@ -62,6 +62,27 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const missingPhotos = published.filter((h) => !imagesByHouse[h.id]?.length).length
 	const missingLocation = published.filter((h) => !h.latitude).length
 
+	const { data: stylesData } = await supabaseAdmin
+		.from('house_styles')
+		.select('id, name, sort_order')
+		.order('sort_order')
+
+	// Pending property stories (Know this property?) — admins can approve
+	let pendingStories: (PropertyStory & { house: House | null })[] = []
+	if (isAdmin) {
+		const { data: storiesData } = await supabaseAdmin
+			.from('property_stories')
+			.select('*')
+			.eq('status', 'pending')
+			.order('created_at', { ascending: false })
+		const stories = (storiesData ?? []) as PropertyStory[]
+		const allHouses = [...pending, ...published]
+		pendingStories = stories.map((s) => ({
+			...s,
+			house: allHouses.find((h) => h.id === s.house_id) ?? null
+		}))
+	}
+
 	return {
 		role: locals.role,
 		user: { email: locals.user.email },
@@ -69,7 +90,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 		published,
 		imagesByHouse,
 		missingPhotos,
-		missingLocation
+		missingLocation,
+		pendingStories,
+		styles: (stylesData ?? []) as HouseStyleRecord[]
 	}
 }
 
@@ -143,6 +166,24 @@ export const actions: Actions = {
 		}
 	},
 
+	approveStory: async ({ request, locals }) => {
+		if (!requireRole(locals.role, 'admin')) return fail(403, { error: 'Unauthorized' })
+
+		const form = await request.formData()
+		const id = form.get('id') as string
+		if (!id) return fail(400, { error: 'Missing story id' })
+
+		const { error } = await supabaseAdmin
+			.from('property_stories')
+			.update({ status: 'approved' })
+			.eq('id', id)
+
+		if (error) {
+			console.error('Approve story error:', error)
+			return fail(500, { error: 'Failed to approve story.' })
+		}
+	},
+
 	deleteImage: async ({ request, locals }) => {
 		if (!requireRole(locals.role, 'superuser')) return fail(403, { error: 'Unauthorized' })
 
@@ -158,6 +199,99 @@ export const actions: Actions = {
 			console.error('Delete image error:', error)
 			return fail(500, { deleteImageError: 'Failed to delete image.' })
 		}
+	},
+
+	addStyle: async ({ request, locals }) => {
+		if (!requireRole(locals.role, 'superuser')) return fail(403, { error: 'Unauthorized' })
+
+		const form = await request.formData()
+		const name = (form.get('name') as string)?.trim()
+
+		if (!name) return fail(400, { styleError: 'Style name is required.' })
+
+		const { data: existing } = await supabaseAdmin
+			.from('house_styles')
+			.select('id')
+			.eq('name', name)
+			.maybeSingle()
+
+		if (existing) return fail(400, { styleError: `"${name}" already exists.` })
+
+		const { data: last } = await supabaseAdmin
+			.from('house_styles')
+			.select('sort_order')
+			.order('sort_order', { ascending: false })
+			.limit(1)
+			.maybeSingle()
+
+		const nextOrder = (last?.sort_order ?? 0) + 1
+
+		const { error } = await supabaseAdmin
+			.from('house_styles')
+			.insert({ name, sort_order: nextOrder })
+
+		if (error) {
+			console.error('Add style error:', error)
+			return fail(500, { styleError: 'Failed to add style.' })
+		}
+
+		return { styleAdded: name }
+	},
+
+	deleteStyle: async ({ request, locals }) => {
+		if (!requireRole(locals.role, 'admin')) return fail(403, { error: 'Unauthorized' })
+
+		const form = await request.formData()
+		const id = form.get('id') as string
+
+		// Block deletion if any house uses this style
+		const { data: styleRow } = await supabaseAdmin
+			.from('house_styles')
+			.select('name')
+			.eq('id', id)
+			.single()
+
+		if (styleRow) {
+			const { count } = await supabaseAdmin
+				.from('houses')
+				.select('id', { count: 'exact', head: true })
+				.eq('style', styleRow.name)
+
+			if ((count ?? 0) > 0) {
+				return fail(400, { styleError: `Cannot delete "${styleRow.name}" — it is used by ${count} listing${count !== 1 ? 's' : ''}.` })
+			}
+		}
+
+		const { error } = await supabaseAdmin.from('house_styles').delete().eq('id', id)
+
+		if (error) {
+			console.error('Delete style error:', error)
+			return fail(500, { styleError: 'Failed to delete style.' })
+		}
+
+		return { styleDeleted: id }
+	},
+
+	setFeatured: async ({ request, locals }) => {
+		if (!requireRole(locals.role, 'admin')) return fail(403, { error: 'Unauthorized' })
+
+		const form = await request.formData()
+		const id = form.get('id') as string
+
+		// Clear any existing featured house first, then set the new one
+		await supabaseAdmin.from('houses').update({ is_featured: false }).eq('is_featured', true)
+
+		const { error } = await supabaseAdmin
+			.from('houses')
+			.update({ is_featured: true })
+			.eq('id', id)
+
+		if (error) {
+			console.error('Set featured error:', error)
+			return fail(500, { error: 'Failed to set featured listing.' })
+		}
+
+		return { featuredId: id }
 	},
 
 	edit: async ({ request, locals }) => {

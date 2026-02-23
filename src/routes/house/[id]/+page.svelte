@@ -1,12 +1,14 @@
 <script lang="ts">
-	import type { House, Image } from '$lib/types'
+	import type { House, Image, PropertyStory } from '$lib/types'
+	import { stripStreetNumber } from '$lib/utils/compress'
 
 	type ImageWithUrl = Image & { url: string }
 
-	let { data }: { data: { house: House; images: ImageWithUrl[] } } = $props()
+	let { data }: { data: { house: House; images: ImageWithUrl[]; stories: PropertyStory[] } } = $props()
 
 	const house = $derived(data.house)
 	const images = $derived(data.images)
+	const stories = $derived(data.stories)
 	const primary = $derived(images.find((i) => i.is_primary) ?? images[0] ?? null)
 	const gallery = $derived(images.filter((i) => i !== primary))
 
@@ -37,6 +39,31 @@
 		if (e.key === 'Escape') closeLightbox()
 		if (e.key === 'ArrowLeft') prevImage()
 		if (e.key === 'ArrowRight') nextImage()
+	}
+
+	// Swipe for lightbox on mobile (swipe anywhere on overlay)
+	const SWIPE_THRESHOLD = 50
+	let touchStartX = 0
+	let lightboxDidSwipe = $state(false)
+
+	function handleLightboxTouchStart(e: TouchEvent) {
+		touchStartX = e.touches[0].clientX
+		lightboxDidSwipe = false
+	}
+
+	function handleLightboxTouchEnd(e: TouchEvent) {
+		const deltaX = e.changedTouches[0].clientX - touchStartX
+		if (deltaX > SWIPE_THRESHOLD) {
+			prevImage()
+			lightboxDidSwipe = true
+		} else if (deltaX < -SWIPE_THRESHOLD) {
+			nextImage()
+			lightboxDidSwipe = true
+		}
+	}
+
+	function handleLightboxClick() {
+		if (!lightboxDidSwipe) closeLightbox()
 	}
 
 	// Share
@@ -186,7 +213,7 @@
 					{house.address_suburb}
 				</h1>
 				<p class="text-sm text-stone-400 tracking-normal mb-8">
-					{house.address_street} · {house.address_state}
+					{stripStreetNumber(house.address_street)} · {house.address_state}
 				</p>
 
 				{#if house.description}
@@ -232,6 +259,45 @@
 		</section>
 	{/if}
 
+	<!-- What people remember -->
+	{#if stories.length > 0}
+		<section class="border-b-2 border-stone-900 bg-white">
+			<div class="mx-auto max-w-6xl px-8 py-10">
+				<h2 class="font-black text-2xl tracking-tight text-stone-900 md:text-3xl">
+					What people remember
+				</h2>
+				<ul class="mt-6 space-y-6">
+					{#each stories as s (s.id)}
+						<li class="border-l-2 border-stone-200 pl-5">
+							<p class="text-[10px] font-bold tracking-normal text-stone-400">
+								{s.author_name}{#if s.period_or_context} · {s.period_or_context}{/if}
+							</p>
+							<p class="mt-1 text-stone-700 leading-relaxed">{s.story}</p>
+						</li>
+					{/each}
+				</ul>
+			</div>
+		</section>
+	{/if}
+
+	<!-- Know this property? -->
+	<section class="border-b-2 border-stone-900 bg-white px-6 py-12 md:py-16">
+		<div class="mx-auto max-w-2xl">
+			<h2 class="font-black text-2xl tracking-tight text-stone-900 md:text-3xl">
+				Know this property?
+			</h2>
+			<p class="mt-3 text-stone-600 leading-relaxed">
+				We would love to hear what you know — or your experiences living, visiting, or building here.
+			</p>
+			<a
+				href="/know-a-property?house={house.id}"
+				class="mt-6 inline-block border-2 border-stone-900 bg-stone-900 px-6 py-3 text-xs font-bold tracking-normal text-white transition hover:bg-white hover:text-stone-900"
+			>
+				Share your story
+			</a>
+		</div>
+	</section>
+
 	<!-- CTA band -->
 	<section class="bg-stone-900 px-6 py-16">
 		<div class="mx-auto max-w-6xl flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
@@ -260,9 +326,11 @@
 {#if lightboxIndex !== null}
 	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
 	<div
-		class="fixed inset-0 z-50 flex items-center justify-center bg-black/95"
-		onclick={closeLightbox}
+		class="fixed inset-0 z-50 flex items-center justify-center bg-black/95 touch-none"
+		onclick={handleLightboxClick}
 		onkeydown={(e) => e.key === 'Escape' && closeLightbox()}
+		ontouchstart={handleLightboxTouchStart}
+		ontouchend={handleLightboxTouchEnd}
 		role="dialog"
 		aria-modal="true"
 		aria-label="Image viewer"

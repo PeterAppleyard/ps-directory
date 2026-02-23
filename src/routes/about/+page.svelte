@@ -92,19 +92,6 @@
 
 				<div class="group px-8 py-12 transition-colors duration-200 hover:bg-stone-900">
 					<p class="mb-4 text-[10px] font-bold tracking-normal text-accent transition-colors group-hover:text-stone-500">
-						Two Storey
-					</p>
-					<h3 class="mb-5 font-black text-5xl tracking-tight text-stone-900 transition-colors group-hover:text-white md:text-6xl">
-						High&shy;line
-					</h3>
-					<p class="text-sm leading-relaxed text-stone-500 transition-colors group-hover:text-stone-400">
-						Steep rooflines and vertical presence on narrower blocks. Where the Lowline
-						sprawled, the Highline rose — maximising space without sacrificing the P&amp;S character.
-					</p>
-				</div>
-
-				<div class="group px-8 py-12 transition-colors duration-200 hover:bg-stone-900">
-					<p class="mb-4 text-[10px] font-bold tracking-normal text-accent transition-colors group-hover:text-stone-500">
 						Multi-Level
 					</p>
 					<h3 class="mb-5 font-black text-4xl tracking-tight text-stone-900 transition-colors group-hover:text-white md:text-5xl">

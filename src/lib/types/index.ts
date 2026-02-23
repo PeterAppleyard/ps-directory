@@ -21,6 +21,7 @@ export interface House {
 	listing_url: string | null
 	sold_listing_url: string | null
 	submitter_email: string | null
+	is_featured: boolean
 }
 
 export interface Image {
@@ -34,5 +35,20 @@ export interface Image {
 	contributor_id: string | null
 }
 
-export type HouseStyle = 'Lowline' | 'Highline' | 'Split-level' | 'Other'
+export interface HouseStyleRecord {
+	id: string
+	name: string
+	sort_order: number
+}
+
 export type HouseCondition = 'Original' | 'Renovated' | 'At Risk' | 'Demolished'
+
+export interface PropertyStory {
+	id: string
+	created_at: string
+	house_id: string
+	author_name: string
+	story: string
+	period_or_context: string | null
+	status: 'pending' | 'approved'
+}

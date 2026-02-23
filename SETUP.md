@@ -47,6 +47,57 @@ CREATE POLICY "Users can update own profile"
   USING (auth.uid() = id);
 ```
 
+### Takedown requests table (for Privacy / Request removal form)
+
+Run in **Supabase → SQL Editor** when adding the privacy and takedown pages:
+
+```sql
+CREATE TABLE takedown_requests (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  created_at timestamptz DEFAULT now(),
+  request_type text NOT NULL CHECK (request_type IN ('full_removal', 'image_removal', 'address_removal')),
+  house_url text,
+  house_address text,
+  requester_name text NOT NULL,
+  requester_email text NOT NULL,
+  reason text,
+  status text NOT NULL DEFAULT 'pending'
+);
+
+ALTER TABLE takedown_requests ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Public can insert takedown requests"
+  ON takedown_requests FOR INSERT WITH CHECK (true);
+```
+
+(Admins can read rows via the service role in the dashboard or a future admin UI.)
+
+### Property stories (Know this property?)
+
+Run in **Supabase → SQL Editor** when adding the “Know this property?” feature:
+
+```sql
+CREATE TABLE property_stories (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  created_at timestamptz DEFAULT now(),
+  house_id uuid NOT NULL REFERENCES houses(id) ON DELETE CASCADE,
+  author_name text NOT NULL,
+  story text NOT NULL,
+  period_or_context text,
+  status text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved'))
+);
+
+ALTER TABLE property_stories ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Public can insert property stories"
+  ON property_stories FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Public can read approved property stories"
+  ON property_stories FOR SELECT USING (status = 'approved');
+```
+
+Admins can set `status = 'approved'` in the Table Editor (or a future admin UI) for stories to appear on the listing.
+
 ## 2. Supabase Auth Configuration
 
 In your Supabase dashboard → **Authentication → URL Configuration**:

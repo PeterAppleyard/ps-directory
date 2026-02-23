@@ -3,7 +3,7 @@
 	import favicon from '$lib/assets/favicon.svg'
 	import { page, navigating } from '$app/stores'
 
-	let { children } = $props()
+	let { children, data } = $props()
 
 	const navLinks = [
 		{ href: '/', label: 'Home' },
@@ -69,15 +69,28 @@
 						<li>
 							<a
 								href={link.href}
-							class="text-[10px] font-bold tracking-normal transition-colors
-								{$page.url.pathname === link.href
-									? 'text-accent underline underline-offset-4 decoration-2 decoration-accent'
-									: 'text-stone-400 hover:text-stone-900'}"
+								class="text-[10px] font-bold tracking-normal transition-colors
+									{$page.url.pathname === link.href
+										? 'text-accent underline underline-offset-4 decoration-2 decoration-accent'
+										: 'text-stone-400 hover:text-stone-900'}"
 							>
 								{link.label}
 							</a>
 						</li>
 					{/each}
+					{#if data.user}
+						<li>
+							<a
+								href="/admin"
+								class="text-[10px] font-bold tracking-normal transition-colors
+									{$page.url.pathname.startsWith('/admin')
+										? 'text-accent underline underline-offset-4 decoration-2 decoration-accent'
+										: 'text-stone-400 hover:text-stone-900'}"
+							>
+								Admin
+							</a>
+						</li>
+					{/if}
 				</ul>
 			</nav>
 		</div>
@@ -94,6 +107,17 @@
 			<p class="text-[10px] tracking-normal text-stone-400">
 				Project Sydney
 			</p>
+			<div class="flex gap-6">
+				<a href="/know-a-property" class="text-[10px] tracking-normal text-stone-400 hover:text-stone-900 transition-colors">
+					Know a property?
+				</a>
+				<a href="/privacy" class="text-[10px] tracking-normal text-stone-400 hover:text-stone-900 transition-colors">
+					Privacy policy
+				</a>
+				<a href="/takedown" class="text-[10px] tracking-normal text-stone-400 hover:text-stone-900 transition-colors">
+					Request removal
+				</a>
+			</div>
 			<p class="text-[10px] tracking-normal text-stone-400">
 				A Pettit &amp; Sevitt Archive
 			</p>

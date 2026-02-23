@@ -1,7 +1,7 @@
 import { supabase } from '$lib/supabase'
 import { error } from '@sveltejs/kit'
 import type { PageLoad } from './$types'
-import type { Image } from '$lib/types'
+import type { Image, PropertyStory } from '$lib/types'
 
 export const load: PageLoad = async ({ params }) => {
 	const { data: house, error: houseErr } = await supabase
@@ -30,5 +30,12 @@ export const load: PageLoad = async ({ params }) => {
 		url: supabase.storage.from('house-images').getPublicUrl(img.storage_path).data.publicUrl
 	}))
 
-	return { house, images: imagesWithUrls }
+	const { data: stories } = await supabase
+		.from('property_stories')
+		.select('*')
+		.eq('house_id', params.id)
+		.eq('status', 'approved')
+		.order('created_at', { ascending: true })
+
+	return { house, images: imagesWithUrls, stories: (stories ?? []) as PropertyStory[] }
 }
