@@ -48,13 +48,13 @@
 	let qaStyle = $state('')
 	let qaStatus = $state<'idle' | 'loading' | 'done' | 'error'>('idle')
 	let qaMessage = $state('')
-	let qaLastId = $state('')
+	let qaLastSlug = $state('')
 
 	async function quickAdd() {
 		if (!qaInput.trim()) return
 		qaStatus = 'loading'
 		qaMessage = ''
-		qaLastId = ''
+		qaLastSlug = ''
 
 		try {
 			const res = await fetch(
@@ -104,7 +104,7 @@
 			const insertJson = await insertRes.json()
 			if (!insertRes.ok || !insertJson.id) throw new Error(insertJson.error ?? 'Insert failed')
 
-			qaLastId = insertJson.id
+			qaLastSlug = insertJson.slug ?? insertJson.id
 			qaStatus = 'done'
 			qaMessage = `Added: ${suburb}${qaStyle ? ' · ' + qaStyle : ''}`
 			qaInput = ''
@@ -399,7 +399,7 @@
 								</p>
 								{#if story.house}
 									<a
-										href="/house/{story.house.id}"
+										href="/house/{story.house.slug ?? story.house.id}"
 										target="_blank"
 										rel="noopener noreferrer"
 										class="mt-0.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
@@ -507,7 +507,7 @@
 					{#if qaStatus === 'done'}
 						<div class="flex flex-wrap items-center gap-4">
 							<p class="text-sm font-medium text-green-600">✓ {qaMessage}</p>
-							<a href="/house/{qaLastId}" target="_blank" rel="noopener noreferrer"
+							<a href="/house/{qaLastSlug}" target="_blank" rel="noopener noreferrer"
 								class="text-xs font-medium text-gray-400 underline hover:text-gray-700 dark:hover:text-white">
 								Preview ↗
 							</a>
@@ -701,7 +701,7 @@
 									</form>
 
 									<a
-										href="/house/{house.id}"
+										href="/house/{house.slug ?? house.id}"
 										target="_blank"
 										rel="noopener noreferrer"
 										class="rounded-md border border-gray-200 dark:border-slate-600 px-5 py-2 text-sm font-medium text-gray-400 dark:text-slate-500 transition hover:border-gray-400 hover:text-gray-600 dark:hover:text-slate-300"
@@ -781,7 +781,7 @@
 										{editOpen[house.id] ? '− Close' : '+ Edit'}
 									</button>
 									<a
-										href="/house/{house.id}"
+										href="/house/{house.slug ?? house.id}"
 										target="_blank"
 										rel="noopener noreferrer"
 										class="rounded border border-gray-100 dark:border-slate-700 px-3 py-1 text-xs font-medium text-gray-300 dark:text-slate-600 transition hover:border-gray-400 hover:text-gray-600 dark:hover:text-slate-300"

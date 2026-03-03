@@ -61,7 +61,7 @@ export async function sendStatusUpdateEmail(opts: {
 	status: 'published' | 'rejected'
 	notes: string | null
 	siteUrl: string
-	houseId: string
+	houseSlug: string
 }) {
 	if (!RESEND_API_KEY || !opts.to) {
 		if (!RESEND_API_KEY) console.warn('[email] Skipped: RESEND_API_KEY not set')
@@ -78,7 +78,7 @@ export async function sendStatusUpdateEmail(opts: {
 		${opts.notes ? `<p style="color: #555;">${opts.notes}</p>` : ''}
 		${
 			approved
-				? `<p><a href="${opts.siteUrl}/house/${opts.houseId}" style="color: #000; font-weight: bold;">View your listing →</a></p>`
+				? `<p><a href="${opts.siteUrl}/house/${opts.houseSlug}" style="color: #000; font-weight: bold;">View your listing →</a></p>`
 				: ''
 		}
 	`

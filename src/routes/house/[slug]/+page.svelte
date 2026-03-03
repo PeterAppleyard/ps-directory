@@ -290,7 +290,7 @@
 				We would love to hear what you know — or your experiences living, visiting, or building here.
 			</p>
 			<a
-				href="/know-a-property?house={house.id}"
+				href="/know-a-property?house={house.slug ?? house.id}"
 				class="mt-6 inline-block border-2 border-stone-900 bg-stone-900 px-6 py-3 text-xs font-bold tracking-normal text-white transition hover:bg-white hover:text-stone-900"
 			>
 				Share your story

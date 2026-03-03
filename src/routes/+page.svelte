@@ -170,7 +170,7 @@
 		{:else}
 			<!-- Featured first card -->
 			<a
-				href="/house/{filtered[0].id}"
+				href="/house/{filtered[0].slug ?? filtered[0].id}"
 				class="group mb-px flex flex-col border border-stone-200 bg-white md:flex-row"
 			>
 				<!-- Left: text -->
@@ -237,7 +237,7 @@
 				<div class="grid grid-cols-1 gap-px bg-stone-200 border border-stone-200 border-t-0 sm:grid-cols-2 lg:grid-cols-3">
 					{#each filtered.slice(1) as house (house.id)}
 						<a
-							href="/house/{house.id}"
+							href="/house/{house.slug ?? house.id}"
 							class="group flex flex-col bg-white transition-colors hover:bg-stone-50"
 						>
 							<!-- Thumbnail -->

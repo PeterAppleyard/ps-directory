@@ -113,7 +113,7 @@ export const actions: Actions = {
 			.from('houses')
 			.update({ status: 'published', verification_notes: notes })
 			.eq('id', id)
-			.select('address_street, address_suburb, submitter_email')
+			.select('address_street, address_suburb, submitter_email, slug')
 			.single()
 
 		if (error) {
@@ -129,7 +129,7 @@ export const actions: Actions = {
 				status: 'published',
 				notes,
 				siteUrl: url.origin,
-				houseId: id
+				houseSlug: house.slug ?? id
 			}).catch((e) => console.error('[email] approve notify failed:', e))
 		}
 	},
@@ -145,7 +145,7 @@ export const actions: Actions = {
 			.from('houses')
 			.update({ status: 'rejected', verification_notes: notes })
 			.eq('id', id)
-			.select('address_street, address_suburb, submitter_email')
+			.select('address_street, address_suburb, submitter_email, slug')
 			.single()
 
 		if (error) {
@@ -161,7 +161,7 @@ export const actions: Actions = {
 				status: 'rejected',
 				notes,
 				siteUrl: url.origin,
-				houseId: id
+				houseSlug: house.slug ?? id
 			}).catch((e) => console.error('[email] reject notify failed:', e))
 		}
 	},

@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit'
 import { supabaseAdmin } from '$lib/supabase-admin'
 import { sendNewSubmissionEmail } from '$lib/server/email'
+import { generateUniqueSlug } from '$lib/server/slug'
 import type { RequestHandler } from './$types'
 
 export const POST: RequestHandler = async ({ request, url }) => {
@@ -32,6 +33,11 @@ export const POST: RequestHandler = async ({ request, url }) => {
 		return json({ error: 'Missing required fields' }, { status: 400 })
 	}
 
+	const slug = await generateUniqueSlug(
+		address_suburb as string,
+		address_street as string
+	)
+
 	const { data: house, error: houseErr } = await supabaseAdmin
 		.from('houses')
 		.insert({
@@ -39,6 +45,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
 			address_suburb,
 			address_state,
 			address_postcode,
+			slug,
 			style: style || null,
 			year_built: year_built || null,
 			builder_name: builder_name || null,
@@ -51,7 +58,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
 			sold_listing_url: typeof sold_listing_url === 'string' ? sold_listing_url || null : null,
 			submitter_email: typeof submitter_email === 'string' ? submitter_email.trim() || null : null
 		})
-		.select('id')
+		.select('id, slug')
 		.single()
 
 	if (houseErr || !house) {
@@ -89,5 +96,5 @@ export const POST: RequestHandler = async ({ request, url }) => {
 		}
 	}
 
-	return json({ id: house.id })
+	return json({ id: house.id, slug: house.slug })
 }

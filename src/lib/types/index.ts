@@ -2,6 +2,7 @@ export type UserRole = 'superuser' | 'admin' | 'super_admin'
 
 export interface House {
 	id: string
+	slug: string | null
 	created_at: string
 	address_street: string
 	address_suburb: string

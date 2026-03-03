@@ -4,9 +4,7 @@
 
 	let { data }: { data: { house: House | null } } = $props()
 
-	const UUID_REGEX = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i
-
-	// House from URL param (?house=id) is passed via data.house
+	// House from URL param (?house=slug) is passed via data.house
 	const prefilledHouse = $derived(data.house)
 	let foundHouse = $state<House | null>(null)
 	let ignorePrefill = $state(false) // true when user clicked "Choose a different property"
@@ -23,30 +21,32 @@
 	let formSubmitting = $state(false)
 	let formSubmitted = $state(false)
 
-	function extractHouseId(input: string): string | null {
+	function extractHouseSlug(input: string): string | null {
 		const trimmed = input.trim()
-		// Match UUID in path like /house/abc-123-def-...
-		const match = trimmed.match(UUID_REGEX)
-		return match ? match[0] : null
+		// Extract path segment after /house/
+		const match = trimmed.match(/\/house\/([^/?#]+)/)
+		return match ? match[1] : null
 	}
 
 	async function findProperty() {
-		const id = extractHouseId(urlInput)
-		if (!id) {
-			findError = 'Paste the full link to a property page (e.g. …/house/…) and we’ll find it.'
+		const slug = extractHouseSlug(urlInput)
+		if (!slug) {
+			findError = "Paste the full link to a property page (e.g. /house/...) and we'll find it."
 			return
 		}
 		findError = ''
 		loading = true
+		// Support both slug and legacy UUID lookups
+		const looksLikeUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug)
 		const { data, error } = await supabase
 			.from('houses')
 			.select('*')
-			.eq('id', id)
+			.eq(looksLikeUUID ? 'id' : 'slug', slug)
 			.eq('status', 'published')
 			.single()
 		loading = false
 		if (error || !data) {
-			findError = 'We couldn’t find that property. Check the link or open it from the directory.'
+			findError = "We couldn't find that property. Check the link or open it from the directory."
 			foundHouse = null
 			return
 		}
@@ -85,7 +85,7 @@
 				Know a property?
 			</h1>
 			<p class="mt-6 text-stone-600 leading-relaxed">
-				We’d love to hear what you know — or your experiences living, visiting, or building. Paste the link to a property page below, or use the <strong>Share your story</strong> button on any listing.
+				We'd love to hear what you know — or your experiences living, visiting, or building. Paste the link to a property page below, or use the <strong>Share your story</strong> button on any listing.
 			</p>
 		</div>
 	</section>
@@ -102,7 +102,7 @@
 							id="property-url"
 							type="url"
 							bind:value={urlInput}
-							placeholder="https://yoursite.com/house/..."
+							placeholder="https://psvitt.com/house/suburb-street-name"
 							class="flex-1 border border-stone-300 bg-white px-4 py-2.5 text-sm text-stone-900 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-stone-900"
 						/>
 						<button
@@ -126,7 +126,7 @@
 						{theHouse.address_suburb}
 					</p>
 					<p class="text-sm text-stone-500">
-						<a href="/house/{theHouse.id}" class="underline hover:text-stone-900">View listing →</a>
+						<a href="/house/{theHouse.slug ?? theHouse.id}" class="underline hover:text-stone-900">View listing →</a>
 					</p>
 					<button
 						type="button"
@@ -191,12 +191,12 @@
 						Thank you
 					</h2>
 					<p class="mt-4 text-stone-600 leading-relaxed">
-						Your story has been submitted and will appear on the listing once we’ve reviewed it.
+						Your story has been submitted and will appear on the listing once we've reviewed it.
 					</p>
 					<div class="mt-6 flex flex-wrap gap-4">
 						{#if theHouse}
 							<a
-								href="/house/{theHouse.id}"
+								href="/house/{theHouse.slug ?? theHouse.id}"
 								class="inline-block border-2 border-stone-900 bg-stone-900 px-6 py-3 text-xs font-bold tracking-normal text-white transition hover:bg-white hover:text-stone-900"
 							>
 								View listing

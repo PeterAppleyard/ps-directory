@@ -127,7 +127,7 @@
 				new mapboxgl.Popup({ maxWidth: '200px', closeButton: false, offset: 14 })
 					.setLngLat(coords)
 					.setHTML(
-						`<a href="/house/${p.id}" style="display:block;text-decoration:none;color:inherit;">
+						`<a href="/house/${p.slug ?? p.id}" style="display:block;text-decoration:none;color:inherit;">
 							${img}
 							<p style="font-size:9px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#a8a29e;margin:0;">${p.style ?? ''}</p>
 							<p style="font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:-0.01em;color:#1c1917;margin:3px 0 0;">${p.suburb}</p>
