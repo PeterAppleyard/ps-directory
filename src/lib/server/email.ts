@@ -9,13 +9,13 @@ function renderEmailLayout(opts: { bodyHtml: string; siteUrl: string }) {
 			${opts.bodyHtml}
 			<hr style="border: 1px solid #eee; margin: 24px 0;" />
 			<p style="font-size: 12px; color: #999;">
-				Project Sydney — <a href="${opts.siteUrl}" style="color: #999;">${opts.siteUrl}</a>
+				PS Archive — <a href="${opts.siteUrl}" style="color: #999;">${opts.siteUrl}</a>
 			</p>
 		</div>
 	`
 }
 
-const FROM = `Project Sydney <${RESEND_FROM_EMAIL}>`
+const FROM = `PS Archive <${RESEND_FROM_EMAIL}>`
 
 function getResend() {
 	return new Resend(RESEND_API_KEY)

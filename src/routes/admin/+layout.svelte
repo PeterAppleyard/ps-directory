@@ -93,7 +93,7 @@
 
 			<!-- Logo -->
 			<a href="/admin" class="flex items-center gap-2 shrink-0">
-				<span class="text-xs font-bold uppercase tracking-widest text-slate-400">Project Sydney</span>
+				<span class="text-xs font-bold uppercase tracking-widest text-slate-400">PS Archive</span>
 				<span class="text-slate-600">/</span>
 				<span class="text-sm font-bold text-white">Admin</span>
 			</a>

@@ -1,4 +1,4 @@
-# Project Sydney — Setup Guide
+# PS Archive — Setup Guide
 
 ## 1. Database Migration
 

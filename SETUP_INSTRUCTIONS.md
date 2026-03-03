@@ -37,7 +37,7 @@ Maintain the mid-century modernist aesthetic in all UI work.
 Prioritize mobile-first responsive design.
 Keep costs within free tier limits (optimize images, efficient queries).
 
-When asked about Project Sydney, always reference these context files first.
+When asked about PS Archive, always reference these context files first.
 ```
 
 ## Step 3: Update .gitignore
@@ -91,7 +91,7 @@ Open Cursor and try this prompt:
 
 ```
 Please read PROJECT_CONTEXT.md and TASKS.md, then tell me:
-1. What is Project Sydney?
+1. What is PS Archive?
 2. What's the highest priority task right now?
 3. What should I focus on first?
 ```

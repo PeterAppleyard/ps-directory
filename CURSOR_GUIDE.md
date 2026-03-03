@@ -206,7 +206,7 @@ Before I commit this, please review for:
 ### Scenario 1: Starting Your Work Day
 
 ```
-Good morning! I'm ready to continue working on Project Sydney.
+Good morning! I'm ready to continue working on PS Archive.
 Please review TASKS.md and tell me:
 1. What's the highest priority incomplete task?
 2. Are there any blockers or dependencies?
@@ -371,4 +371,4 @@ I'm not sure what to prioritize. Can you:
 
 **To update docs**: "Please update [file] with [information]"
 
-Good luck building Project Sydney! 🏠✨
+Good luck building PS Archive! 🏠✨

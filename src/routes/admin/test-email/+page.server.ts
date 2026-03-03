@@ -32,13 +32,13 @@ export const actions: Actions = {
 		const resend = new Resend(RESEND_API_KEY)
 
 		const { data, error } = await resend.emails.send({
-			from: `Project Sydney <${RESEND_FROM_EMAIL}>`,
+			from: `PS Archive <${RESEND_FROM_EMAIL}>`,
 			reply_to: RESEND_REPLY_TO || undefined,
 			to: [to],
-			subject: 'Project Sydney — email test',
+			subject: 'PS Archive — email test',
 			html: `
 				<div style="font-family: Helvetica, Arial, sans-serif; max-width: 560px; padding: 24px 16px;">
-					<p style="color: #111; font-weight: bold;">This is a test email from Project Sydney.</p>
+					<p style="color: #111; font-weight: bold;">This is a test email from PS Archive.</p>
 					<p style="color: #555;">
 						Sent from: <code>${RESEND_FROM_EMAIL}</code><br/>
 						Sent at: ${new Date().toISOString()}<br/>
@@ -46,7 +46,7 @@ export const actions: Actions = {
 					</p>
 					<hr style="border: 1px solid #eee; margin: 24px 0;" />
 					<p style="font-size: 12px; color: #999;">
-						Project Sydney — <a href="${url.origin}" style="color: #999;">${url.origin}</a>
+						PS Archive — <a href="${url.origin}" style="color: #999;">${url.origin}</a>
 					</p>
 				</div>
 			`

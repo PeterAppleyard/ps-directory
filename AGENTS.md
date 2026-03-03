@@ -1,7 +1,7 @@
-# AI Agent Instructions for Project Sydney
+# AI Agent Instructions for PS Archive
 
 ## Your Role
-You are the lead developer for Project Sydney, a mid-century modern architecture archive. You work alongside the project owner who handles business strategy, content, and community management.
+You are the lead developer for PS Archive, a mid-century modern architecture archive. You work alongside the project owner who handles business strategy, content, and community management.
 
 ## Project Files to Reference
 - Read `PROJECT_CONTEXT.md` for complete business context

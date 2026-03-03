@@ -34,7 +34,7 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
-	<title>Project Sydney — A Pettit &amp; Sevitt Directory</title>
+	<title>PS Archive — A Pettit &amp; Sevitt Directory</title>
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
 	<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rethink+Sans:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet" />
@@ -105,7 +105,7 @@
 	<footer class="border-t-2 border-stone-900 bg-white px-6 py-8">
 		<div class="mx-auto flex max-w-6xl items-center justify-between">
 			<p class="text-[10px] tracking-normal text-stone-400">
-				Project Sydney
+				PS Archive
 			</p>
 			<div class="flex gap-6">
 				<a href="/know-a-property" class="text-[10px] tracking-normal text-stone-400 hover:text-stone-900 transition-colors">

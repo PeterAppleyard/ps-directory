@@ -6,7 +6,7 @@
 				Privacy policy
 			</h1>
 			<p class="mt-6 text-stone-600 leading-relaxed">
-				Project Sydney is a community archive of Pettit &amp; Sevitt homes. We collect and display only what is needed to document and celebrate this architecture.
+				PS Archive is a community archive of Pettit &amp; Sevitt homes. We collect and display only what is needed to document and celebrate this architecture.
 			</p>
 		</div>
 	</section>

@@ -118,7 +118,7 @@
 			</div>
 			<div class="px-8 py-12 md:py-16 space-y-5 text-stone-600 leading-relaxed text-[15px]">
 				<p>
-					Project Sydney is an independent community project — not affiliated with the
+					PS Archive is an independent community project — not affiliated with the
 					original Pettit &amp; Sevitt company in any way. It exists because these homes
 					deserve to be recorded before they're lost to demolition, unsympathetic renovation,
 					or simply the passage of time.

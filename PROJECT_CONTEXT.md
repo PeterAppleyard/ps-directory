@@ -1,4 +1,4 @@
-# Project Sydney (P&S Directory)
+# PS Archive (P&S Directory)
 
 ## Project Overview
 A digital directory and archive of houses built by Pettit & Sevitt, an iconic mid-century modern project home developer in Sydney, Australia (1950s-1980s).
@@ -243,7 +243,7 @@ PUBLIC_SUPABASE_ANON_KEY=<your_key>
 
 ## Brand Identity
 
-### Name: "Project Sydney"
+### Name: "PS Archive"
 - References "project homes" (what P&S built)
 - "Project" = ongoing documentation effort
 - Sydney = regional specificity

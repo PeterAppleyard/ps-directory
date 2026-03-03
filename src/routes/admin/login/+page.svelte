@@ -12,7 +12,7 @@
 		<!-- Header -->
 		<div class="mb-10">
 			<p class="mb-2 text-[10px] font-bold uppercase tracking-[0.35em] text-stone-400">
-				Project Sydney
+				PS Archive
 			</p>
 			<h1 class="font-black text-4xl uppercase tracking-tight text-stone-900">
 				{mode === 'login' ? 'Sign In' : 'Reset Password'}
