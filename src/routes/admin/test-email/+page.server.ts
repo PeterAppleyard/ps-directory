@@ -9,8 +9,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	return {
 		fromEmail: RESEND_FROM_EMAIL || null,
+		replyTo: env.RESEND_REPLY_TO || null,
 		apiKeySet: !!RESEND_API_KEY,
-		// Show first/last 4 chars of the key so you can confirm which key is active
 		apiKeyHint: RESEND_API_KEY
 			? `${RESEND_API_KEY.slice(0, 7)}…${RESEND_API_KEY.slice(-4)}`
 			: null

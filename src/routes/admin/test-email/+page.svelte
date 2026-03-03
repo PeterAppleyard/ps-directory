@@ -35,6 +35,15 @@
 				<span class="text-xs text-red-400 font-semibold">NOT SET</span>
 			{/if}
 		</div>
+
+		<div class="flex items-center justify-between">
+			<span class="text-xs text-slate-400">Reply-to</span>
+			{#if data.replyTo}
+				<span class="text-xs font-mono text-slate-200">{data.replyTo}</span>
+			{:else}
+				<span class="text-xs text-yellow-500">NOT SET — add RESEND_REPLY_TO in Vercel</span>
+			{/if}
+		</div>
 	</div>
 
 	<!-- Send form -->
