@@ -1,5 +1,5 @@
 import { Resend } from 'resend'
-import { RESEND_API_KEY, RESEND_FROM_EMAIL } from '$env/static/private'
+import { RESEND_API_KEY, RESEND_FROM_EMAIL, RESEND_REPLY_TO } from '$env/static/private'
 
 const FONT = 'Helvetica, Arial, sans-serif'
 
@@ -14,6 +14,8 @@ function renderEmailLayout(opts: { bodyHtml: string; siteUrl: string }) {
 		</div>
 	`
 }
+
+const FROM = `Project Sydney <${RESEND_FROM_EMAIL}>`
 
 function getResend() {
 	return new Resend(RESEND_API_KEY)
@@ -40,7 +42,8 @@ export async function sendNewSubmissionEmail(opts: {
 
 	const resend = getResend()
 	const { error } = await resend.emails.send({
-		from: RESEND_FROM_EMAIL,
+		from: FROM,
+		reply_to: RESEND_REPLY_TO || undefined,
 		to: opts.to,
 		subject: `New submission: ${opts.address}, ${opts.suburb}`,
 		html: renderEmailLayout({ bodyHtml, siteUrl: opts.siteUrl })
@@ -80,8 +83,9 @@ export async function sendStatusUpdateEmail(opts: {
 
 	const resend = getResend()
 	const { error } = await resend.emails.send({
-		from: RESEND_FROM_EMAIL,
-		to: opts.to,
+		from: FROM,
+		reply_to: RESEND_REPLY_TO || undefined,
+		to: [opts.to],
 		subject: approved
 			? `Your submission has been approved — ${opts.suburb}`
 			: `Update on your submission — ${opts.suburb}`,

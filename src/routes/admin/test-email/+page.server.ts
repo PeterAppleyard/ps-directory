@@ -1,6 +1,6 @@
 import { fail, redirect } from '@sveltejs/kit'
 import { Resend } from 'resend'
-import { RESEND_API_KEY, RESEND_FROM_EMAIL } from '$env/static/private'
+import { RESEND_API_KEY, RESEND_FROM_EMAIL, RESEND_REPLY_TO } from '$env/static/private'
 import type { Actions, PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async ({ locals }) => {
@@ -32,7 +32,8 @@ export const actions: Actions = {
 		const resend = new Resend(RESEND_API_KEY)
 
 		const { data, error } = await resend.emails.send({
-			from: RESEND_FROM_EMAIL,
+			from: `Project Sydney <${RESEND_FROM_EMAIL}>`,
+			reply_to: RESEND_REPLY_TO || undefined,
 			to: [to],
 			subject: 'Project Sydney — email test',
 			html: `
