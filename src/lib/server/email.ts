@@ -1,6 +1,20 @@
 import { Resend } from 'resend'
 import { RESEND_API_KEY, RESEND_FROM_EMAIL } from '$env/static/private'
 
+const FONT = 'Helvetica, Arial, sans-serif'
+
+function renderEmailLayout(opts: { bodyHtml: string; siteUrl: string }) {
+	return `
+		<div style="font-family: ${FONT}; max-width: 560px; padding: 24px 16px;">
+			${opts.bodyHtml}
+			<hr style="border: 1px solid #eee; margin: 24px 0;" />
+			<p style="font-size: 12px; color: #999;">
+				Project Sydney — <a href="${opts.siteUrl}" style="color: #999;">${opts.siteUrl}</a>
+			</p>
+		</div>
+	`
+}
+
 function getResend() {
 	return new Resend(RESEND_API_KEY)
 }
@@ -12,31 +26,27 @@ export async function sendNewSubmissionEmail(opts: {
 	houseId: string
 	siteUrl: string
 }) {
-	if (!RESEND_API_KEY || opts.to.length === 0) return
+	if (!RESEND_API_KEY || opts.to.length === 0) {
+		if (!RESEND_API_KEY) console.warn('[email] Skipped: RESEND_API_KEY not set')
+		return
+	}
+
+	const adminUrl = `${opts.siteUrl}/admin`
+	const bodyHtml = `
+		<p style="color: #111;">A new Pettit &amp; Sevitt home has been submitted for review.</p>
+		<p style="color: #111;"><strong>${opts.address}, ${opts.suburb}</strong></p>
+		<p><a href="${adminUrl}" style="color: #000; font-weight: bold;">Review in Admin →</a></p>
+	`
 
 	const resend = getResend()
-	const adminUrl = `${opts.siteUrl}/admin`
-
-	await resend.emails.send({
+	const { error } = await resend.emails.send({
 		from: RESEND_FROM_EMAIL,
 		to: opts.to,
 		subject: `New submission: ${opts.address}, ${opts.suburb}`,
-		html: `
-			<p style="font-family: Helvetica, Arial, sans-serif; color: #111;">
-				A new Pettit &amp; Sevitt home has been submitted for review.
-			</p>
-			<p style="font-family: Helvetica, Arial, sans-serif; color: #111;">
-				<strong>${opts.address}, ${opts.suburb}</strong>
-			</p>
-			<p style="font-family: Helvetica, Arial, sans-serif;">
-				<a href="${adminUrl}" style="color: #000; font-weight: bold;">Review in Admin →</a>
-			</p>
-			<hr style="border: 1px solid #eee; margin: 24px 0;" />
-			<p style="font-family: Helvetica, Arial, sans-serif; font-size: 12px; color: #999;">
-				Project Sydney — <a href="${opts.siteUrl}" style="color: #999;">${opts.siteUrl}</a>
-			</p>
-		`
+		html: renderEmailLayout({ bodyHtml, siteUrl: opts.siteUrl })
 	})
+
+	if (error) console.error('[email] New submission send failed:', error.message)
 }
 
 export async function sendStatusUpdateEmail(opts: {
@@ -48,37 +58,35 @@ export async function sendStatusUpdateEmail(opts: {
 	siteUrl: string
 	houseId: string
 }) {
-	if (!RESEND_API_KEY || !opts.to) return
+	if (!RESEND_API_KEY || !opts.to) {
+		if (!RESEND_API_KEY) console.warn('[email] Skipped: RESEND_API_KEY not set')
+		return
+	}
+
+	const approved = opts.status === 'published'
+	const bodyHtml = `
+		<p style="color: #111;">${approved ? 'Great news!' : 'Thanks for your submission.'}</p>
+		<p style="color: #111;">
+			Your submission for <strong>${opts.address}, ${opts.suburb}</strong> has been
+			<strong>${approved ? 'published to the directory' : 'reviewed but not approved at this time'}</strong>.
+		</p>
+		${opts.notes ? `<p style="color: #555;">${opts.notes}</p>` : ''}
+		${
+			approved
+				? `<p><a href="${opts.siteUrl}/house/${opts.houseId}" style="color: #000; font-weight: bold;">View your listing →</a></p>`
+				: ''
+		}
+	`
 
 	const resend = getResend()
-	const approved = opts.status === 'published'
-
-	await resend.emails.send({
+	const { error } = await resend.emails.send({
 		from: RESEND_FROM_EMAIL,
 		to: opts.to,
 		subject: approved
 			? `Your submission has been approved — ${opts.suburb}`
 			: `Update on your submission — ${opts.suburb}`,
-		html: `
-			<p style="font-family: Helvetica, Arial, sans-serif; color: #111;">
-				${approved ? 'Great news!' : 'Thanks for your submission.'}
-			</p>
-			<p style="font-family: Helvetica, Arial, sans-serif; color: #111;">
-				Your submission for <strong>${opts.address}, ${opts.suburb}</strong> has been
-				<strong>${approved ? 'published to the directory' : 'reviewed but not approved at this time'}</strong>.
-			</p>
-			${opts.notes ? `<p style="font-family: Helvetica, Arial, sans-serif; color: #555;">${opts.notes}</p>` : ''}
-			${
-				approved
-					? `<p style="font-family: Helvetica, Arial, sans-serif;">
-				<a href="${opts.siteUrl}/house/${opts.houseId}" style="color: #000; font-weight: bold;">View your listing →</a>
-			</p>`
-					: ''
-			}
-			<hr style="border: 1px solid #eee; margin: 24px 0;" />
-			<p style="font-family: Helvetica, Arial, sans-serif; font-size: 12px; color: #999;">
-				Project Sydney — <a href="${opts.siteUrl}" style="color: #999;">${opts.siteUrl}</a>
-			</p>
-		`
+		html: renderEmailLayout({ bodyHtml, siteUrl: opts.siteUrl })
 	})
+
+	if (error) console.error('[email] Status update send failed:', error.message)
 }

@@ -134,14 +134,20 @@ Once you're signed in as Super Admin:
 
 ## 5. Resend Email Setup (Optional but Recommended)
 
-1. Sign up at [resend.com](https://resend.com)
-2. Create an API key
-3. Add a sending domain (or use Resend's shared domain for testing)
-4. Add to Vercel environment variables:
-   - `RESEND_API_KEY` = your API key
-   - `RESEND_FROM_EMAIL` = `noreply@yourdomain.com`
+Email is used to notify admins when a new house is submitted, and to notify submitters when their listing is approved or rejected.
 
-Without `RESEND_API_KEY`, email notifications are silently skipped — everything else works fine.
+**Checklist:**
+
+1. **Sign up** at [resend.com](https://resend.com).
+2. **Create an API key** — Dashboard → API Keys → Create. Copy the key (starts with `re_`). Keep it secret; if exposed, revoke it and create a new one.
+3. **From address** — Either verify your own domain in Resend and use e.g. `noreply@yourdomain.com`, or use Resend’s onboarding domain for testing (see Resend docs for allowed senders on your plan).
+4. **Local env** — In `.env.local` (or `.env`) add:
+   - `RESEND_API_KEY` = your API key
+   - `RESEND_FROM_EMAIL` = your verified sender (e.g. `noreply@yourdomain.com`)
+5. **Production** — In Vercel (or your host): Project → Settings → Environment Variables. Add the same two variables for Production (and Preview if you want emails on preview deploys).
+6. **Restart** — Restart the dev server after changing env so SvelteKit picks up the new values.
+
+Without `RESEND_API_KEY`, email notifications are skipped (you’ll see a log line); the rest of the app works normally.
 
 ## Role Reference
 

@@ -60,8 +60,8 @@
 - Fast loading
 
 ### 3. Create About/History Section
-**Status**: Not Started
-**Priority**: MEDIUM
+**Status**: Parked — awaiting content from owner
+**Priority**: LOW
 **Description**: Educational content about Pettit & Sevitt
 
 **Route**: `src/routes/about/+page.svelte`
@@ -96,24 +96,13 @@
 **Priority**: HIGH
 **Description**: Compress images on upload to save storage costs
 
-**Why Critical**: User uploads could quickly exceed 1GB free tier
-
-**Tasks**:
-- [ ] Install sharp or similar image processing library
-- [ ] Create server-side endpoint for upload processing
-- [ ] Compress images to WebP format
-- [ ] Resize to max 2000px width
-- [ ] Target file size: <500KB per image
-- [ ] Generate thumbnails for grid view (400px)
-- [ ] Update submission form to use processing endpoint
-- [ ] Add progress indicator during upload
-- [ ] Handle errors gracefully
-
-**Acceptance Criteria**:
-- Images compressed without visible quality loss
-- Storage usage minimized
-- Upload process clear to users
-- Works reliably
+**Implementation**: Client-side via Canvas API in `src/lib/utils/compress.ts`
+- Resizes to max 2000×2000px
+- Converts to WebP format
+- First pass at 0.85 quality; retries down to 0.6 until under 500KB
+- Falls back to original if compression fails
+- Progress indicator shown during upload ("Compressing 2 of 3…")
+- No server-side dependency (no sharp needed)
 
 ### 5. Admin Moderation Dashboard
 **Status**: ✅ Complete
@@ -162,7 +151,7 @@
 ## 📍 Location Features (Next Month)
 
 ### 7. Map View Integration
-**Status**: Not Started
+**Status**: ✅ Complete
 **Priority**: MEDIUM
 **Description**: Show houses on an interactive map
 
@@ -221,16 +210,15 @@
 - [ ] Consider dark mode (low priority)
 
 ### 10. Performance Optimization
-**Status**: Ongoing
+**Status**: Partially complete
 **Priority**: MEDIUM
 
 **Tasks**:
+- [ ] **Add pagination to house list** — currently fetches all records; needs 20–30 per page before launch (HIGH once house count grows)
 - [ ] Implement image lazy loading
-- [ ] Add pagination to house list (20-30 per page)
 - [ ] Optimize database queries (only fetch needed columns)
 - [ ] Add caching headers
 - [ ] Minimize JavaScript bundle
-- [ ] Optimize Tailwind CSS (already good in v4)
 - [ ] Run Lighthouse audits and address issues
 
 ## 🧪 Testing & Quality (Future)
@@ -250,56 +238,40 @@
 ## 🚀 Pre-Launch (Before Public Release)
 
 ### 12. Content & Data
-**Status**: Not Started
+**Status**: Parked — owner to action when ready
 **Owner**: Business Owner
 
 **Tasks**:
-- [ ] Source and add 50-100 initial houses
+- [ ] Source and add 50–100 initial houses
 - [ ] Get high-quality photos for seed data
-- [ ] Write About section content
+- [ ] Write About section content (page structure already exists)
 - [ ] Gather historical P&S advertisements
 - [ ] Create style guide content (identifying features)
 - [ ] Prepare launch announcement
 - [ ] Coordinate with Facebook group admins
 
 ### 13. Legal & Compliance
-**Status**: Not Started
+**Status**: Partially complete — parked for now
 **Owner**: Business Owner with AI assistance
 
-**Tasks**:
-- [ ] Write privacy policy
+**Done**:
+- ✅ Privacy policy page (`/privacy`)
+- ✅ Takedown request form (`/takedown`) with Supabase table
+
+**Remaining** (parked):
 - [ ] Write terms of service
 - [ ] Create contributor license agreement
-- [ ] Add takedown request process
 - [ ] Add disclaimers (independent project, not affiliated)
 - [ ] Confirm image permissions for historical materials
 - [ ] Research P&S trademark status
 
 ### 14. Deployment
-**Status**: Not Started
-**Priority**: When ready for launch
-**Platform**: Vercel
-
-**Tasks**:
-- [ ] Create Vercel account at vercel.com (free Hobby tier)
-- [ ] Push code to GitHub repository
-- [ ] Import GitHub repo in Vercel dashboard
-- [ ] Add environment variables in Vercel project settings:
-  - `PUBLIC_SUPABASE_URL`
-  - `PUBLIC_SUPABASE_ANON_KEY`
-  - `SUPABASE_SERVICE_ROLE_KEY`
-  - `PRIVATE_ADMIN_PASSWORD`
-  - `PUBLIC_MAPBOX_TOKEN`
-- [ ] Verify preview deployment works
-- [ ] Setup custom domain (projectsydney.com.au?)
-- [ ] SSL is automatic — no action needed
-- [ ] Test production build end-to-end
-- [ ] Setup Vercel Analytics (free) or leave for now
+**Status**: ✅ Complete — live on Vercel
+**Priority**: Done
 
 **Notes**:
-- No adapter changes needed — `@sveltejs/adapter-auto` works with Vercel
-- Every push to `main` branch auto-deploys
-- PRs get preview URLs automatically
+- Deployed to Vercel, auto-deploys on push to `main`
+- Custom domain setup: TBD
 
 ## 📊 Analytics & Monitoring (Post-Launch)
 
@@ -343,10 +315,9 @@
 ## 🐛 Known Issues
 
 ### Current Bugs
-1. Submission form styling incomplete
-2. No loading indicators on data fetch
+1. No pagination on house list — will become a performance issue as data grows
+2. No loading indicators on data fetch (homepage)
 3. No error handling for failed Supabase queries
-4. Images not optimized (storage concern)
 
 ### Technical Debt
 - [ ] Add error boundaries

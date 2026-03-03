@@ -87,20 +87,26 @@ PUBLIC_SUPABASE_ANON_KEY=<your_key>
 
 ## Feature Roadmap
 
-### MVP (Current Phase)
+### MVP (Current Phase) — ✅ Complete
 - [x] Database schema
 - [x] Basic homepage with house grid
 - [x] Filter by suburb and style
-- [ ] House detail page with gallery
-- [ ] Submission form (IN PROGRESS - forms styling needs work)
-- [ ] About/History section
+- [x] House detail page with gallery
+- [x] Submission form (styled, working, with geocoding)
+- [x] About/History page (structure exists; content needed from owner)
 
-### Phase 2 - Core Features
-- [ ] Google Maps integration on house detail pages
-- [ ] Admin moderation dashboard
-- [ ] Image optimization pipeline (compress on upload)
-- [ ] "Near Me" discovery (location-based filtering)
-- [ ] Search functionality
+### Phase 2 - Core Features — ✅ Largely Complete
+- [x] Map view (`/map`)
+- [x] Admin moderation dashboard (approve/reject, roles, invites)
+- [x] Image optimization pipeline (client-side Canvas → WebP, <500KB)
+- [x] Search functionality
+- [x] Email notifications via Resend (new submissions, approvals)
+- [x] Bulk import tool (`/admin/import`)
+- [x] "Know this property?" community stories (`/know-a-property`)
+- [x] Takedown request form (`/takedown`)
+- [x] Privacy page (`/privacy`)
+- [ ] Pagination on house list — **still needed**
+- [ ] "Near Me" discovery (location-based filtering) — future
 
 ### Phase 3 - Community Features
 - [ ] User accounts (optional)
@@ -279,14 +285,10 @@ PUBLIC_SUPABASE_ANON_KEY=<your_key>
 
 ## Next Steps Priority
 
-1. **Fix submission form styling** (Tailwind v4 forms)
-2. **Create house detail page** (gallery, map, all info)
-3. **Build About/History section** (P&S story, style guide)
-4. **Add test data** (10-20 sample houses to show functionality)
-5. **Admin moderation interface** (approve/reject pending submissions)
-6. **Image optimization** (implement compression on upload)
-7. **Google Maps integration** (detail page + map view)
-8. **Soft launch to Facebook group** (get feedback, initial content)
+1. **Add pagination to house list** — most pressing technical gap before heavy use
+2. **Seed data** — source 50–100 initial houses (owner)
+3. **About/History content** — page exists, needs copy (owner)
+4. **Soft launch to Facebook group** — get feedback, drive initial submissions
 
 ## Resources & References
 
