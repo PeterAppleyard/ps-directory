@@ -267,6 +267,21 @@
 						Settings
 					</a>
 
+					<!-- Email Test -->
+					<a
+						href="/admin/test-email"
+						onclick={closeSidebar}
+						class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition
+							{isActive('/admin/test-email')
+								? 'bg-slate-700 dark:bg-slate-800 text-white'
+								: 'text-slate-300 hover:bg-slate-700 dark:hover:bg-slate-800 hover:text-white'}"
+					>
+						<svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+						</svg>
+						Email Test
+					</a>
+
 					<!-- Divider -->
 					<div class="my-2 border-t border-slate-700"></div>
 
