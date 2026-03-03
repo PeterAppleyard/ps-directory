@@ -47,6 +47,18 @@ CREATE POLICY "Users can update own profile"
   USING (auth.uid() = id);
 ```
 
+### Add missing profile columns (notification_frequency and theme)
+
+Run in **Supabase → SQL Editor** after creating the profiles table:
+
+```sql
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS notification_frequency TEXT NOT NULL DEFAULT 'instant'
+    CHECK (notification_frequency IN ('instant', 'daily', 'none')),
+  ADD COLUMN IF NOT EXISTS theme TEXT NOT NULL DEFAULT 'system'
+    CHECK (theme IN ('light', 'dark', 'system'));
+```
+
 ### Takedown requests table (for Privacy / Request removal form)
 
 Run in **Supabase → SQL Editor** when adding the privacy and takedown pages:
@@ -102,17 +114,19 @@ Admins can set `status = 'approved'` in the Table Editor (or a future admin UI) 
 
 In your Supabase dashboard → **Authentication → URL Configuration**:
 
-- **Site URL**: `https://ps-directory.vercel.app` (or your domain)
-- **Redirect URLs**: Add `https://ps-directory.vercel.app/auth/callback`
+- **Site URL**: `https://psvitt.com`
+- **Redirect URLs** — add all of these:
+  - `https://psvitt.com/auth/callback*`  ← the `*` wildcard is required (allows query strings like `?next=/admin/reset-password`)
+  - `http://localhost:5173/auth/callback*`  ← for local dev
+
+> **Important**: The wildcard `*` suffix is mandatory. Without it, the password reset email will redirect to Supabase's own hosted UI instead of the app's `/admin/reset-password` page.
 
 ## 3. Bootstrap Your Super Admin Account
 
-1. Go to `https://ps-directory.vercel.app/admin/login`
-2. Click **Forgot password?** — this won't work yet (no account), so instead:
-3. Go to **Supabase dashboard → Authentication → Users → Add user**
-4. Create a user with your email and a temporary password
-5. Sign in at `/admin/login` with those credentials
-6. In Supabase → **SQL Editor**, run:
+1. Go to **Supabase dashboard → Authentication → Users → Add user**
+2. Create a user with your email and a temporary password
+3. Sign in at `https://psvitt.com/admin/login` with those credentials
+4. In Supabase → **SQL Editor**, run:
 
 ```sql
 UPDATE public.profiles
@@ -122,7 +136,9 @@ WHERE id = (
 );
 ```
 
-7. Refresh `/admin` — you now have full Super Admin access.
+5. Refresh `/admin` — you now have full Super Admin access.
+
+> **If you already have an account but emails aren't working**, your profile role may have been left as the default `'superuser'`. The email notification query only targets `'admin'` and `'super_admin'` roles. Run the SQL above to fix it.
 
 ## 4. Add Team Members
 

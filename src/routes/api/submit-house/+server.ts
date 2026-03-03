@@ -59,12 +59,13 @@ export const POST: RequestHandler = async ({ request, url }) => {
 		return json({ error: houseErr?.message ?? 'Insert failed' }, { status: 500 })
 	}
 
-	// Notify admins/super_admins who have submission emails enabled
+	// Notify admins/super_admins who have submission emails enabled and frequency is not 'none'
 	const { data: recipients } = await supabaseAdmin
 		.from('profiles')
 		.select('id, email_on_new_submission')
 		.in('role', ['admin', 'super_admin'])
 		.eq('email_on_new_submission', true)
+		.neq('notification_frequency', 'none')
 
 	if (recipients && recipients.length > 0) {
 		const { data: authUsers } = await supabaseAdmin.auth.admin.listUsers()
