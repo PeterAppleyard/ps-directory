@@ -165,6 +165,62 @@ Email is used to notify admins when a new house is submitted, and to notify subm
 
 Without `RESEND_API_KEY`, email notifications are skipped (you’ll see a log line); the rest of the app works normally.
 
+## 6. Slug URL Migration (Required after Mar 2026 deploy)
+
+The slug URL feature added a `slug` column to the `houses` table. Run this once in **Supabase → SQL Editor** to add the column and backfill all existing houses:
+
+```sql
+-- Add the slug column
+ALTER TABLE public.houses
+  ADD COLUMN IF NOT EXISTS slug TEXT;
+
+CREATE UNIQUE INDEX IF NOT EXISTS houses_slug_key ON public.houses (slug);
+
+-- Backfill existing houses (suburb + street name, collision-safe)
+WITH slugified AS (
+  SELECT
+    id,
+    lower(
+      regexp_replace(
+        regexp_replace(
+          regexp_replace(
+            address_suburb || '-' || regexp_replace(address_street, '^\d+\w*\s+', ''),
+            '[^a-zA-Z0-9\s\-]', '', 'g'
+          ),
+          '\s+', '-', 'g'
+        ),
+        '-{2,}', '-', 'g'
+      )
+    ) AS base_slug,
+    ROW_NUMBER() OVER (
+      PARTITION BY lower(
+        regexp_replace(
+          regexp_replace(
+            regexp_replace(
+              address_suburb || '-' || regexp_replace(address_street, '^\d+\w*\s+', ''),
+              '[^a-zA-Z0-9\s\-]', '', 'g'
+            ),
+            '\s+', '-', 'g'
+          ),
+          '-{2,}', '-', 'g'
+        )
+      )
+      ORDER BY created_at
+    ) AS rn
+  FROM public.houses
+  WHERE slug IS NULL
+)
+UPDATE public.houses h
+SET slug = CASE
+  WHEN s.rn = 1 THEN s.base_slug
+  ELSE s.base_slug || '-' || s.rn
+END
+FROM slugified s
+WHERE h.id = s.id;
+```
+
+After running: verify with `SELECT id, slug FROM houses LIMIT 10;` — each row should have a slug like `west-pymble-todman-avenue`.
+
 ## Role Reference
 
 | Role | Can do |

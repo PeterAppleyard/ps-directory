@@ -28,36 +28,12 @@
 **Priority**: HIGH
 **Description**: Individual page for each house showing all details
 
-**Route**: `src/routes/house/[id]/+page.svelte` and `+page.ts`
+**Route**: `src/routes/house/[slug]/+page.svelte` and `+page.ts`
 
-**Tasks**:
-- [ ] Create route with dynamic [id] parameter
-- [ ] Load house data from Supabase in +page.ts
-- [ ] Load associated images from images table
-- [ ] Display hero image (primary image)
-- [ ] Show image gallery (remaining images)
-  - [ ] Implement lightbox/modal for full-size viewing
-  - [ ] Add prev/next navigation in gallery
-- [ ] Display house information:
-  - [ ] Address (consider privacy - maybe just suburb?)
-  - [ ] Style, year, builder
-  - [ ] Description
-  - [ ] Condition
-- [ ] Add Google Maps embed showing location
-- [ ] Link back to main listing page
-- [ ] Add share functionality (copy link, social media?)
-- [ ] Mobile-responsive layout
-
-**Dependencies**:
-- Google Maps API key (or Mapbox alternative)
-- Decision on address privacy (show full or partial?)
-
-**Acceptance Criteria**:
-- All house details displayed clearly
-- Images are prominent and clickable
-- Map shows location accurately
-- Looks great on mobile and desktop
-- Fast loading
+**Notes**:
+- Route uses SEO-friendly slugs (e.g. `/house/west-pymble-todman-avenue`)
+- UUID-based old URLs redirect 301 to slug URL automatically
+- Full lightbox gallery, share button, stories section all implemented
 
 ### 3. Create About/History Section
 **Status**: Parked — awaiting content from owner
@@ -88,6 +64,21 @@
 - Visually interesting (use archival imagery)
 - Matches site aesthetic
 - Mobile-friendly reading experience
+
+### 3b. SEO-Friendly Slug URLs
+**Status**: ✅ Complete (Mar 2026)
+**Priority**: HIGH
+**Description**: Replace UUID-based house URLs with readable slugs
+
+**Implementation**:
+- `src/lib/utils/slug.ts` — `generateBaseSlug()`, `isUUID()` (client-safe)
+- `src/lib/server/slug.ts` — `generateUniqueSlug()` with DB collision handling (appends -2, -3, etc.)
+- Route `house/[slug]` handles slugs and UUID params (UUID → 301 redirect to slug)
+- Slug stored in `houses.slug` column (UNIQUE, nullable for backfill compatibility)
+- All URL references throughout app, emails, map, admin panel updated
+- **SQL migration still needed**: Run the migration in SETUP.md to add the `slug` column and backfill existing houses
+
+---
 
 ## 🎯 Core Features (Next 2 Weeks)
 
@@ -271,7 +262,9 @@
 
 **Notes**:
 - Deployed to Vercel, auto-deploys on push to `main`
-- Custom domain setup: TBD
+- Custom domain: `psvitt.com` (Cloudflare DNS → Vercel)
+- Email: `noreply@send.psvitt.com` via Resend, reply-to `hello@psvitt.com`
+- Auth redirect URLs configured for `psvitt.com` in Supabase
 
 ## 📊 Analytics & Monitoring (Post-Launch)
 
@@ -318,6 +311,7 @@
 1. No pagination on house list — will become a performance issue as data grows
 2. No loading indicators on data fetch (homepage)
 3. No error handling for failed Supabase queries
+4. **Slug DB migration not yet run** — need to run SQL in SETUP.md to add `slug` column and backfill existing houses before deploying slug changes to production
 
 ### Technical Debt
 - [ ] Add error boundaries
@@ -329,11 +323,16 @@
 
 ## 📝 Notes
 
-### Decision Needed
-- **Maps provider**: Google vs Mapbox?
-- **Address privacy**: Show full address or just suburb?
-- **Authentication**: Full user accounts or simpler approach?
-- **Admin access**: Separate admin table or simple password?
+### Decisions Made
+- **Maps provider**: ✅ Mapbox (free tier, 50k loads/month)
+- **Address privacy**: ✅ Full address shown; street number displayed, no privacy issues raised
+- **Authentication**: ✅ Supabase Auth with role-based access (`admin`, `super_admin`)
+- **Admin access**: ✅ Role in `profiles` table; super_admin has full access
+- **URL structure**: ✅ Slug-based URLs (e.g. `/house/west-pymble-todman-avenue`)
+- **Email provider**: ✅ Resend, subdomain `send.psvitt.com`
+
+### Pending Decision
+- None currently
 
 ### Waiting On
 - Business owner to source historical content (ads, photos, text)

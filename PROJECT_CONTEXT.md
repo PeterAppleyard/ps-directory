@@ -60,6 +60,7 @@ A digital directory and archive of houses built by Pettit & Sevitt, an iconic mi
 - Architectural details (style, year_built, builder_name)
 - Status tracking (condition, status, verification)
 - Metadata (contributor_id, verified_by, verification_notes)
+- `slug` (TEXT UNIQUE) — SEO-friendly URL segment, e.g. `west-pymble-todman-avenue`; generated on insert, backfilled for existing rows via SQL migration in SETUP.md
 
 **images table:**
 - Links to houses (house_id FK)
@@ -105,7 +106,10 @@ PUBLIC_SUPABASE_ANON_KEY=<your_key>
 - [x] "Know this property?" community stories (`/know-a-property`)
 - [x] Takedown request form (`/takedown`)
 - [x] Privacy page (`/privacy`)
-- [ ] Pagination on house list — **still needed**
+- [x] SEO-friendly slug URLs for house pages (e.g. `/house/west-pymble-todman-avenue`)
+- [x] Custom domain `psvitt.com` on Vercel
+- [x] Resend email with `send.psvitt.com` subdomain, reply-to `hello@psvitt.com`
+- [ ] Pagination on house list — **still needed before heavy use**
 - [ ] "Near Me" discovery (location-based filtering) — future
 
 ### Phase 3 - Community Features
@@ -264,9 +268,10 @@ PUBLIC_SUPABASE_ANON_KEY=<your_key>
 ## Key Unknowns / Questions
 
 ### Technical
-- [ ] Geocoding addresses to lat/long (Google API? Batch process?)
-- [ ] Image compression pipeline (sharp.js? Cloudflare Images?)
-- [ ] Search implementation (PostgreSQL full-text? Separate service?)
+- [x] Geocoding: Mapbox Geocoding API used in QuickAdd and submission form
+- [x] Image compression: Client-side Canvas API → WebP, <500KB
+- [x] Search: Client-side filter on loaded houses (sufficient for current scale)
+- [ ] Pagination: Still needed as house count grows
 
 ### Content
 - [ ] How to verify a house is actually P&S? (Checklist of features?)
@@ -285,10 +290,11 @@ PUBLIC_SUPABASE_ANON_KEY=<your_key>
 
 ## Next Steps Priority
 
-1. **Add pagination to house list** — most pressing technical gap before heavy use
-2. **Seed data** — source 50–100 initial houses (owner)
-3. **About/History content** — page exists, needs copy (owner)
-4. **Soft launch to Facebook group** — get feedback, drive initial submissions
+1. **Run slug DB migration** — add `slug` column and backfill existing houses (SQL in SETUP.md). Must do before deploying or slug-based links will 404.
+2. **Add pagination to house list** — most pressing technical gap before heavy use
+3. **Seed data** — source 50–100 initial houses (owner)
+4. **About/History content** — page exists, needs copy (owner)
+5. **Soft launch to Facebook group** — get feedback, drive initial submissions
 
 ## Resources & References
 
