@@ -8,7 +8,7 @@
 			</p>
 			<h1 class="font-black leading-none tracking-tight text-white"
 				style="font-size: clamp(4rem, 15vw, 14rem); line-height: 0.9;">
-				Pettit<br />&amp;<br />Sevitt
+				Pettit+<br />Sevitt
 			</h1>
 			<div class="mt-10 h-px bg-stone-700"></div>
 			<p class="mt-8 max-w-2xl text-base text-stone-400 leading-relaxed md:text-lg">
