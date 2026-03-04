@@ -10,6 +10,11 @@
 	let isDark = $state(false)
 	let sidebarOpen = $state(false)
 
+	// Sync theme from server data when it changes (e.g. after settings page save)
+	$effect(() => {
+		if (data.theme) theme = data.theme
+	})
+
 	// Resolve actual dark state from theme + OS preference
 	$effect(() => {
 		if (theme === 'dark') {
