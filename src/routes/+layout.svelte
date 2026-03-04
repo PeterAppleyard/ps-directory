@@ -52,14 +52,9 @@
 	{#if !$page.url.pathname.startsWith('/admin')}
 	<header class="border-b-2 border-stone-900 bg-white">
 		<div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-			<!-- Wordmark -->
-			<a href="/" class="flex flex-col leading-none group">
-				<span class="text-[9px] font-bold tracking-normal text-stone-400 group-hover:text-stone-600 transition-colors">
-					Project
-				</span>
-				<span class="text-2xl font-black tracking-tight text-stone-900">
-					Sydney
-				</span>
+			<!-- Logo -->
+			<a href="/" class="transition-opacity hover:opacity-70">
+				<img src="/images/psa-logo.svg" alt="PS Archive" height="36" class="h-9 w-auto" />
 			</a>
 
 			<!-- Nav -->
