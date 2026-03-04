@@ -12,8 +12,7 @@
 			</h1>
 			<div class="mt-10 h-px bg-stone-700"></div>
 			<p class="mt-8 max-w-2xl text-base text-stone-400 leading-relaxed md:text-lg">
-				Pioneers of affordable modernist living. Builders of a Sydney dream.
-				Now documented, one suburb at a time.
+				Pioneers of affordable modernist living.
 			</p>
 		</div>
 	</section>
