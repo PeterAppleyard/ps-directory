@@ -52,7 +52,7 @@
 				The Directory
 			</h2>
 			<p class="mt-5 max-w-xl text-base text-stone-500 leading-relaxed">
-				Documenting Pettit &amp; Sevitt homes across Sydney — one suburb at a time.
+				Documenting Pettit &amp; Sevitt homes — one suburb at a time.
 			</p>
 		</div>
 	</section>
