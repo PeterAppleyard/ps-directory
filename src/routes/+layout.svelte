@@ -53,8 +53,9 @@
 	<header class="border-b-2 border-stone-900 bg-white">
 		<div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
 			<!-- Logo -->
-			<a href="/" class="transition-opacity hover:opacity-70">
+			<a href="/" class="flex flex-col gap-1 transition-opacity hover:opacity-70">
 				<img src="/images/psa-logo.svg" alt="PS Archive" height="36" class="h-9 w-auto" />
+				<span class="text-[9px] font-bold tracking-normal text-stone-400">Pettit &amp; Sevitt Archive</span>
 			</a>
 
 			<!-- Nav -->
