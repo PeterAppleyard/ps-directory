@@ -21,4 +21,11 @@
 @layer utilities {
 	.text-xl, .text-2xl, .text-3xl {
 		font-family: var(--font-heading);
-	}}
+	}
+
+	.ink-hero {
+		background-image: url('/images/paper.jpg');
+		background-size: cover;
+		background-position: center;
+	}
+}

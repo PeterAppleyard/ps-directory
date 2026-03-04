@@ -1,7 +1,7 @@
 <main class="min-h-screen bg-white">
 
 	<!-- Masthead -->
-	<section class="bg-stone-900 px-6 py-20 md:py-32">
+	<section class="ink-hero px-6 py-20 md:py-32">
 		<div class="mx-auto max-w-5xl">
 			<p class="mb-10 text-[10px] font-bold tracking-normal text-stone-500">
 				Sydney, Australia &nbsp;·&nbsp; 1961–1977/78
@@ -85,7 +85,7 @@
 	</section>
 
 	<!-- CTA -->
-	<section class="bg-stone-900 px-6 py-20 md:py-24">
+	<section class="ink-hero px-6 py-20 md:py-24">
 		<div class="mx-auto max-w-5xl flex flex-col gap-10 md:flex-row md:items-center md:justify-between">
 			<div>
 				<p class="mb-4 text-[10px] font-bold tracking-normal text-stone-500">

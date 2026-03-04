@@ -45,7 +45,7 @@
 
 <main class="min-h-screen bg-white">
 	<!-- Hero — hidden in map mode -->
-	<section class="bg-stone-900 px-6 py-16 md:py-24 {view === 'map' ? 'hidden' : ''}">
+	<section class="ink-hero px-6 py-16 md:py-24 {view === 'map' ? 'hidden' : ''}">
 		<div class="mx-auto max-w-6xl">
 			<h1 class="font-black leading-none tracking-tight text-white"
 				style="font-size: clamp(4rem, 15vw, 14rem); line-height: 0.9;">
