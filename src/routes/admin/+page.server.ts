@@ -164,6 +164,37 @@ export const actions: Actions = {
 		}
 	},
 
+	deleteHouse: async ({ request, locals }) => {
+		if (!requireRole(locals.role, 'admin')) return fail(403, { error: 'Unauthorized' })
+
+		const form = await request.formData()
+		const id = form.get('id') as string
+		if (!id) return fail(400, { error: 'Missing house id' })
+
+		// Fetch all images so we can remove them from storage
+		const { data: images } = await supabaseAdmin
+			.from('images')
+			.select('storage_path')
+			.eq('house_id', id)
+
+		if (images?.length) {
+			await supabaseAdmin.storage
+				.from('house-images')
+				.remove(images.map((i) => i.storage_path))
+
+			await supabaseAdmin.from('images').delete().eq('house_id', id)
+		}
+
+		const { error } = await supabaseAdmin.from('houses').delete().eq('id', id)
+
+		if (error) {
+			console.error('Delete house error:', error)
+			return fail(500, { error: 'Failed to delete listing.' })
+		}
+
+		return { deletedId: id }
+	},
+
 	deleteImage: async ({ request, locals }) => {
 		if (!requireRole(locals.role, 'superuser')) return fail(403, { error: 'Unauthorized' })
 

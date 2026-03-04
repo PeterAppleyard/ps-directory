@@ -619,6 +619,18 @@
 									>
 										{editOpen[house.id] ? '− Close edit' : '+ Edit'}
 									</button>
+									<form method="POST" action="?/deleteHouse" use:enhance={() => {
+										return async ({ update }) => { await update() }
+									}}>
+										<input type="hidden" name="id" value={house.id} />
+										<button
+											type="submit"
+											onclick={(e) => { if (!confirm(`Delete ${house.address_suburb} — ${house.address_street}? This cannot be undone.`)) e.preventDefault() }}
+											class="rounded border border-red-200 dark:border-red-800 px-3 py-1 text-xs font-medium text-red-400 transition hover:bg-red-50 hover:text-red-600"
+										>
+											Delete
+										</button>
+									</form>
 								</div>
 							</div>
 
@@ -788,6 +800,18 @@
 									>
 										View ↗
 									</a>
+									<form method="POST" action="?/deleteHouse" use:enhance={() => {
+										return async ({ update }) => { await update() }
+									}}>
+										<input type="hidden" name="id" value={house.id} />
+										<button
+											type="submit"
+											onclick={(e) => { if (!confirm(`Delete ${house.address_suburb} — ${house.address_street}? This cannot be undone.`)) e.preventDefault() }}
+											class="rounded border border-red-200 dark:border-red-800 px-3 py-1 text-xs font-medium text-red-400 transition hover:bg-red-50 hover:text-red-600"
+										>
+											Delete
+										</button>
+									</form>
 								</div>
 							</div>
 
@@ -1105,10 +1129,28 @@
 					</button>
 				</div>
 			</div>
+
 		</form>
 
-		<!-- Photos — outside the edit form to avoid nested form HTML -->
-		<div class="border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/50 px-5 pb-5 pt-4">
+	<!-- Danger zone — must be outside the edit <form> -->
+	<div class="border-t border-red-100 dark:border-red-900/30 bg-gray-50 dark:bg-slate-900/50 px-5 py-3 flex items-center justify-between">
+		<p class="text-xs text-red-300 dark:text-red-800">Permanently delete this listing and all its images.</p>
+		<form method="POST" action="?/deleteHouse" use:enhance={() => {
+			return async ({ update }) => { await update() }
+		}}>
+			<input type="hidden" name="id" value={house.id} />
+			<button
+				type="submit"
+				onclick={(e) => { if (!confirm(`Delete ${house.address_suburb} — ${house.address_street}? This cannot be undone.`)) e.preventDefault() }}
+				class="rounded border border-red-300 dark:border-red-800 px-4 py-1.5 text-xs font-medium text-red-500 transition hover:bg-red-50 hover:text-red-700"
+			>
+				Delete listing
+			</button>
+		</form>
+	</div>
+
+	<!-- Photos — outside the edit form to avoid nested form HTML -->
+	<div class="border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/50 px-5 pb-5 pt-4">
 			<p class="mb-3 text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
 				Photos · {allImages(house.id).length}
 			</p>
