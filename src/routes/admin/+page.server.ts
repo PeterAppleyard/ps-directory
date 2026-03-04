@@ -17,39 +17,33 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	const isAdmin = requireRole(locals.role, 'admin')
 
-	const publishedQuery = supabaseAdmin
-		.from('houses')
-		.select('*')
-		.eq('status', 'published')
-		.order('address_suburb')
+	// Run all independent queries in parallel
+	const [pendingResult, publishedResult, stylesResult, storiesResult] = await Promise.all([
+		isAdmin
+			? supabaseAdmin.from('houses').select('*').eq('status', 'pending').order('created_at', { ascending: false })
+			: Promise.resolve({ data: [] as House[], error: null }),
+		supabaseAdmin.from('houses').select('*').eq('status', 'published').order('address_suburb'),
+		supabaseAdmin.from('house_styles').select('id, name, sort_order').order('sort_order'),
+		isAdmin
+			? supabaseAdmin.from('property_stories').select('*').eq('status', 'pending').order('created_at', { ascending: false })
+			: Promise.resolve({ data: [] as PropertyStory[], error: null }),
+	])
 
-	let pending: House[] = []
+	if (pendingResult.error) console.error('Admin load (pending) error:', pendingResult.error)
+	if (publishedResult.error) console.error('Admin load (published) error:', publishedResult.error)
 
-	if (isAdmin) {
-		const { data, error } = await supabaseAdmin
-			.from('houses')
-			.select('*')
-			.eq('status', 'pending')
-			.order('created_at', { ascending: false })
-		if (error) console.error('Admin load (pending) error:', error)
-		pending = (data ?? []) as House[]
-	}
+	const pending = (pendingResult.data ?? []) as House[]
+	const published = (publishedResult.data ?? []) as House[]
 
-	const { data: publishedData, error: publishedErr } = await publishedQuery
-	if (publishedErr) console.error('Admin load (published) error:', publishedErr)
-	const published = (publishedData ?? []) as House[]
-
-	const allHouses = [...pending, ...published]
+	// Only pre-fetch images for pending houses — they're shown in the moderation queue.
+	// Published house images are fetched on demand when the edit panel opens.
 	const imagesByHouse: Record<string, (Image & { url: string })[]> = {}
 
-	if (allHouses.length > 0) {
+	if (pending.length > 0) {
 		const { data: images } = await supabaseAdmin
 			.from('images')
 			.select('*')
-			.in(
-				'house_id',
-				allHouses.map((h) => h.id)
-			)
+			.in('house_id', pending.map((h) => h.id))
 			.order('sort_order')
 
 		for (const img of images ?? []) {
@@ -62,26 +56,12 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const missingPhotos = published.filter((h) => !imagesByHouse[h.id]?.length).length
 	const missingLocation = published.filter((h) => !h.latitude).length
 
-	const { data: stylesData } = await supabaseAdmin
-		.from('house_styles')
-		.select('id, name, sort_order')
-		.order('sort_order')
-
-	// Pending property stories (Know this property?) — admins can approve
-	let pendingStories: (PropertyStory & { house: House | null })[] = []
-	if (isAdmin) {
-		const { data: storiesData } = await supabaseAdmin
-			.from('property_stories')
-			.select('*')
-			.eq('status', 'pending')
-			.order('created_at', { ascending: false })
-		const stories = (storiesData ?? []) as PropertyStory[]
-		const allHouses = [...pending, ...published]
-		pendingStories = stories.map((s) => ({
-			...s,
-			house: allHouses.find((h) => h.id === s.house_id) ?? null
-		}))
-	}
+	const stories = (storiesResult.data ?? []) as PropertyStory[]
+	const allHouses = [...pending, ...published]
+	const pendingStories: (PropertyStory & { house: House | null })[] = stories.map((s) => ({
+		...s,
+		house: allHouses.find((h) => h.id === s.house_id) ?? null
+	}))
 
 	return {
 		role: locals.role,
@@ -92,7 +72,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		missingPhotos,
 		missingLocation,
 		pendingStories,
-		styles: (stylesData ?? []) as HouseStyleRecord[]
+		styles: (stylesResult.data ?? []) as HouseStyleRecord[]
 	}
 }
 
