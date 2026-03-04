@@ -1,5 +1,15 @@
 # PS Archive - Task List
 
+## ⚠️ Pre-Launch Blockers (Must Do Before Going Public)
+
+### 🔴 SEO — Remove noindex
+**Status**: Intentionally blocked
+**File**: `src/routes/+layout.svelte` — `<meta name="robots" content="noindex, nofollow" />`
+**Action**: Remove this tag when site is ready for public launch and dummy content has been replaced with real data.
+**Why it's there**: Site has placeholder/WIP content and sparse house listings — not ready to be indexed.
+
+---
+
 ## 🔥 Immediate Priorities (This Week)
 
 ### 1. Fix Submission Form Styling

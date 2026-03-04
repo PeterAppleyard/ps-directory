@@ -35,6 +35,8 @@
 <svelte:head>
 	<link rel="icon" href={favicon} />
 	<title>PS Archive — A Pettit &amp; Sevitt Directory</title>
+	<!-- TODO: REMOVE BEFORE LAUNCH — site is work in progress, dummy content present -->
+	<meta name="robots" content="noindex, nofollow" />
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200&family=Oswald:wght@400;500;600;700&family=Rethink+Sans:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet" />
