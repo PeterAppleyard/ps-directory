@@ -21,5 +21,4 @@
 @layer utilities {
 	.text-xl, .text-2xl, .text-3xl {
 		font-family: var(--font-heading);
-	}
-}
+	}}

@@ -43,16 +43,16 @@
 	})
 </script>
 
-<main class="min-h-screen bg-stone-50">
+<main class="min-h-screen bg-white">
 	<!-- Hero — hidden in map mode -->
-	<section class="border-b border-stone-200 bg-white {view === 'map' ? 'hidden' : ''}">
-		<div class="mx-auto max-w-6xl px-6 py-20">
-			<p class="mb-3 text-xs font-bold tracking-normal text-stone-400">A Living Archive</p>
-			<h2 class="font-black text-6xl tracking-tight text-stone-900 md:text-9xl uppercase">
-				The Directory
-			</h2>
-			<p class="mt-5 max-w-xl text-base text-stone-500 leading-relaxed">
-				Documenting Pettit &amp; Sevitt homes — one suburb at a time.
+	<section class="bg-stone-900 px-6 py-16 md:py-24 {view === 'map' ? 'hidden' : ''}">
+		<div class="mx-auto max-w-6xl">
+			<h1 class="font-black leading-none tracking-tight text-white"
+				style="font-size: clamp(4rem, 15vw, 14rem); line-height: 0.9;">
+				Pettit<span style="font-size: 0.75em; font-weight: 100; font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; position: relative; top: 0.32em; line-height: 1;">+</span><span style="display: block; margin-top: -0.15em;">Sevitt</span>
+			</h1>
+			<p class="mt-8 text-base text-stone-400 leading-relaxed">
+				A community archive.
 			</p>
 		</div>
 	</section>
