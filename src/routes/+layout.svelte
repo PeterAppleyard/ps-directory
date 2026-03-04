@@ -52,7 +52,7 @@
 
 <div class="flex min-h-screen flex-col">
 	{#if !$page.url.pathname.startsWith('/admin')}
-	<header class="border-b-2 border-stone-900 bg-white">
+	<header class="border-b-2 border-stone-900 bg-[#faf2e5]">
 		<div class="flex items-center justify-between px-8 py-5">
 			<!-- Logo -->
 			<a href="/" class="flex flex-col gap-1 transition-opacity hover:opacity-70">
