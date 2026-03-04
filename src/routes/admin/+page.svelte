@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms'
-	import type { House, Image, HouseStyleRecord, HouseCondition } from '$lib/types'
+	import type { House, Image, HouseStyleRecord, HouseCondition, PropertyStory } from '$lib/types'
 	import type { ActionData, PageData } from './$types'
 	import { PUBLIC_MAPBOX_TOKEN } from '$env/static/public'
 	import { supabase } from '$lib/supabase'
@@ -15,12 +15,18 @@
 
 	const isAdmin = $derived(data.role === 'admin' || data.role === 'super_admin')
 
+	// ── Local reactive lists — updated optimistically so actions don't trigger
+	//    a full load() re-run (which would hit Supabase on every button press)
+	let localPending = $state<House[]>(data.pending)
+	let localPublished = $state<House[]>(data.published)
+	let localPendingStories = $state<(PropertyStory & { house: House | null })[]>(data.pendingStories ?? [])
+
 	// ── Derived stat counts ───────────────────────────────────────────────────
-	const statPublished = $derived(data.published.length)
-	const statPending = $derived(data.pending.length)
-	const statPendingStories = $derived(data.pendingStories?.length ?? 0)
+	const statPublished = $derived(localPublished.length)
+	const statPending = $derived(localPending.length)
+	const statPendingStories = $derived(localPendingStories.length)
 	const statMissingPhotos = $derived(data.missingPhotos ?? 0)
-	const statMissingLocation = $derived(data.missingLocation ?? 0)
+	const statMissingLocation = $derived(localPublished.filter(h => !h.latitude).length)
 
 	// Task queue: auto-generated actionable items
 	const tasks = $derived([
@@ -378,19 +384,19 @@
 	{/if}
 
 	<!-- ── PROPERTY STORIES (Know this property?) ───────────────────────────── -->
-	{#if isAdmin && (data.pendingStories?.length ?? 0) > 0}
+	{#if isAdmin && localPendingStories.length > 0}
 		<div id="stories" class="rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-hidden">
 			<div class="border-b border-gray-100 dark:border-slate-700 px-5 py-3">
 				<h2 class="text-sm font-semibold text-gray-700 dark:text-slate-300">
 					Property stories
-					<span class="ml-2 rounded-full bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:text-amber-400">
-						{data.pendingStories.length} pending
-					</span>
+			<span class="ml-2 rounded-full bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:text-amber-400">
+					{localPendingStories.length} pending
+				</span>
 				</h2>
 				<p class="mt-1 text-xs text-gray-500 dark:text-slate-400">“Know this property?” submissions — approve to show on the listing.</p>
 			</div>
 			<ul class="divide-y divide-gray-100 dark:divide-slate-700">
-				{#each data.pendingStories as story (story.id)}
+				{#each localPendingStories as story (story.id)}
 					<li class="px-5 py-4">
 						<div class="flex flex-wrap items-start justify-between gap-4">
 							<div class="min-w-0 flex-1">
@@ -411,7 +417,12 @@
 								{/if}
 								<p class="mt-2 text-sm text-gray-700 dark:text-slate-300 leading-relaxed">{story.story}</p>
 							</div>
-							<form method="POST" action="/admin?/approveStory" use:enhance class="shrink-0">
+							<form method="POST" action="/admin?/approveStory" use:enhance={({ formData }) => {
+							const id = formData.get('id') as string
+							return async ({ result }) => {
+								if (result.type === 'success') localPendingStories = localPendingStories.filter(s => s.id !== id)
+							}
+						}} class="shrink-0">
 								<input type="hidden" name="id" value={story.id} />
 								<button
 									type="submit"
@@ -571,7 +582,7 @@
 
 		<!-- ── PENDING TAB ── -->
 		{#if activeTab === 'pending'}
-			{#if data.pending.length === 0}
+			{#if localPending.length === 0}
 				<div class="py-20 text-center">
 					<div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
 						<svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -582,7 +593,7 @@
 				</div>
 			{:else}
 				<div class="divide-y divide-gray-100 dark:divide-slate-700">
-					{#each data.pending as house (house.id)}
+					{#each localPending as house (house.id)}
 						{@const imgs = houseImages(house.id)}
 						<div>
 							<!-- House header -->
@@ -619,8 +630,14 @@
 									>
 										{editOpen[house.id] ? '− Close edit' : '+ Edit'}
 									</button>
-									<form method="POST" action="?/deleteHouse" use:enhance={() => {
-										return async ({ update }) => { await update() }
+									<form method="POST" action="?/deleteHouse" use:enhance={({ formData }) => {
+										const id = formData.get('id') as string
+										return async ({ result }) => {
+											if (result.type === 'success') {
+												localPending = localPending.filter(h => h.id !== id)
+												localPublished = localPublished.filter(h => h.id !== id)
+											}
+										}
 									}}>
 										<input type="hidden" name="id" value={house.id} />
 										<button
@@ -690,7 +707,12 @@
 								</div>
 
 								<div class="flex flex-wrap gap-3">
-									<form method="POST" action="?/approve" use:enhance>
+									<form method="POST" action="?/approve" use:enhance={({ formData }) => {
+										const id = formData.get('id') as string
+										return async ({ result }) => {
+											if (result.type === 'success') localPending = localPending.filter(h => h.id !== id)
+										}
+									}}>
 										<input type="hidden" name="id" value={house.id} />
 										<input type="hidden" name="notes" value={notesText[house.id] ?? ''} />
 										<button
@@ -701,7 +723,12 @@
 										</button>
 									</form>
 
-									<form method="POST" action="?/reject" use:enhance>
+									<form method="POST" action="?/reject" use:enhance={({ formData }) => {
+										const id = formData.get('id') as string
+										return async ({ result }) => {
+											if (result.type === 'success') localPending = localPending.filter(h => h.id !== id)
+										}
+									}}>
 										<input type="hidden" name="id" value={house.id} />
 										<input type="hidden" name="notes" value={notesText[house.id] ?? ''} />
 										<button
@@ -730,13 +757,13 @@
 
 		<!-- ── PUBLISHED TAB ── -->
 		{#if activeTab === 'published'}
-			{#if data.published.length === 0}
+			{#if localPublished.length === 0}
 				<div class="py-20 text-center">
 					<p class="text-sm text-gray-400 dark:text-slate-500">No published listings yet.</p>
 				</div>
 			{:else}
 				<div class="divide-y divide-gray-100 dark:divide-slate-700">
-					{#each data.published as house (house.id)}
+					{#each localPublished as house (house.id)}
 						<div>
 							<div class="flex flex-wrap items-center justify-between gap-4 p-5">
 								<div>
@@ -775,7 +802,12 @@
 										</span>
 									{/if}
 									{#if !house.is_featured}
-										<form method="POST" action="?/setFeatured" use:enhance>
+										<form method="POST" action="?/setFeatured" use:enhance={({ formData }) => {
+										const id = formData.get('id') as string
+										return async ({ result }) => {
+											if (result.type === 'success') localPublished = localPublished.map(h => ({ ...h, is_featured: h.id === id }))
+										}
+									}}>
 											<input type="hidden" name="id" value={house.id} />
 											<button
 												type="submit"
@@ -800,8 +832,14 @@
 									>
 										View ↗
 									</a>
-									<form method="POST" action="?/deleteHouse" use:enhance={() => {
-										return async ({ update }) => { await update() }
+									<form method="POST" action="?/deleteHouse" use:enhance={({ formData }) => {
+										const id = formData.get('id') as string
+										return async ({ result }) => {
+											if (result.type === 'success') {
+												localPending = localPending.filter(h => h.id !== id)
+												localPublished = localPublished.filter(h => h.id !== id)
+											}
+										}
 									}}>
 										<input type="hidden" name="id" value={house.id} />
 										<button
@@ -918,23 +956,41 @@
 			method="POST"
 			action="?/edit"
 			class="border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/50 p-5"
-			use:enhance={() => {
-				editSaving[house.id] = true
-				editError[house.id] = false
-				editSuccess[house.id] = false
-				return async ({ update }) => {
-					await update({ reset: false })
-					editSaving[house.id] = false
-					if (form?.editSuccess === house.id) {
-						editSuccess[house.id] = true
-						editOpen[house.id] = false
-						setTimeout(() => { editSuccess[house.id] = false }, 3000)
+		use:enhance={() => {
+			editSaving[house.id] = true
+			editError[house.id] = false
+			editSuccess[house.id] = false
+			return async ({ result }) => {
+				editSaving[house.id] = false
+				if (result.type === 'success') {
+					editSuccess[house.id] = true
+					editOpen[house.id] = false
+					// Update the house in local lists so the row reflects edits immediately
+					const d = editData[house.id]
+					if (d) {
+						const updated = (h: House): House => h.id !== house.id ? h : {
+							...h,
+							address_street: d.address_street,
+							address_suburb: d.address_suburb,
+							address_state: d.address_state,
+							address_postcode: d.address_postcode,
+							style: d.style || '',
+							year_built: d.year_built ? parseInt(d.year_built) : null,
+							builder_name: d.builder_name || null,
+							condition: (d.condition as HouseCondition) || null,
+							description: d.description || null,
+							latitude: d.latitude ? parseFloat(d.latitude) : null,
+							longitude: d.longitude ? parseFloat(d.longitude) : null,
+						}
+						localPending = localPending.map(updated)
+						localPublished = localPublished.map(updated)
 					}
-					if (form?.editError === house.id) {
-						editError[house.id] = true
-					}
+					setTimeout(() => { editSuccess[house.id] = false }, 3000)
+				} else {
+					editError[house.id] = true
 				}
-			}}
+			}
+		}}
 		>
 			<input type="hidden" name="id" value={house.id} />
 			<input type="hidden" name="latitude" value={d.latitude} />
@@ -1135,8 +1191,14 @@
 	<!-- Danger zone — must be outside the edit <form> -->
 	<div class="border-t border-red-100 dark:border-red-900/30 bg-gray-50 dark:bg-slate-900/50 px-5 py-3 flex items-center justify-between">
 		<p class="text-xs text-red-300 dark:text-red-800">Permanently delete this listing and all its images.</p>
-		<form method="POST" action="?/deleteHouse" use:enhance={() => {
-			return async ({ update }) => { await update() }
+		<form method="POST" action="?/deleteHouse" use:enhance={({ formData }) => {
+			const id = formData.get('id') as string
+			return async ({ result }) => {
+				if (result.type === 'success') {
+					localPending = localPending.filter(h => h.id !== id)
+					localPublished = localPublished.filter(h => h.id !== id)
+				}
+			}
 		}}>
 			<input type="hidden" name="id" value={house.id} />
 			<button
