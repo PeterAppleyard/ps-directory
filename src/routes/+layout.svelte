@@ -37,7 +37,7 @@
 	<title>PS Archive — A Pettit &amp; Sevitt Directory</title>
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
-	<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rethink+Sans:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet" />
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200&family=Oswald:wght@400;500;600;700&family=Rethink+Sans:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet" />
 </svelte:head>
 
 <!-- Navigation progress bar -->
@@ -51,7 +51,7 @@
 <div class="flex min-h-screen flex-col">
 	{#if !$page.url.pathname.startsWith('/admin')}
 	<header class="border-b-2 border-stone-900 bg-white">
-		<div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+		<div class="flex items-center justify-between px-8 py-5">
 			<!-- Logo -->
 			<a href="/" class="flex flex-col gap-1 transition-opacity hover:opacity-70">
 				<img src="/images/psa-logo.svg" alt="PS Archive" height="36" class="h-9 w-auto" />
