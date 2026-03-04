@@ -8,7 +8,7 @@
 			</p>
 			<h1 class="font-black leading-none tracking-tight text-white"
 				style="font-size: clamp(4rem, 15vw, 14rem); line-height: 0.9;">
-				Pettit<span style="font-size: 0.75em; font-weight: 100; font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; vertical-align: -0.12em; line-height: 1;">+</span><br />Sevitt
+				Pettit<span style="font-size: 0.75em; font-weight: 100; font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; position: relative; top: 0.32em; line-height: 1;">+</span><span style="display: block; margin-top: -0.15em;">Sevitt</span>
 			</h1>
 			<div class="mt-10 h-px bg-stone-700"></div>
 			<p class="mt-8 max-w-2xl text-base text-stone-400 leading-relaxed md:text-lg">
