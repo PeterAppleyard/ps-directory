@@ -98,7 +98,7 @@ PUBLIC_SUPABASE_ANON_KEY=<your_key>
 
 ### Phase 2 - Core Features — ✅ Largely Complete
 - [x] Map view (`/map`)
-- [x] Admin moderation dashboard (approve/reject, roles, invites)
+- [x] Admin moderation dashboard (approve/reject, roles, invites, delete)
 - [x] Image optimization pipeline (client-side Canvas → WebP, <500KB)
 - [x] Search functionality
 - [x] Email notifications via Resend (new submissions, approvals)
@@ -109,6 +109,9 @@ PUBLIC_SUPABASE_ANON_KEY=<your_key>
 - [x] SEO-friendly slug URLs for house pages (e.g. `/house/west-pymble-todman-avenue`)
 - [x] Custom domain `psvitt.com` on Vercel
 - [x] Resend email with `send.psvitt.com` subdomain, reply-to `hello@psvitt.com`
+- [x] About page — verified editorial content, Pete's personal note
+- [x] PSA logo SVG in header; full-width nav; dark hero on home + about
+- [x] Admin optimistic UI — near-instant actions, no full reload
 - [ ] Pagination on house list — **still needed before heavy use**
 - [ ] "Near Me" discovery (location-based filtering) — future
 
@@ -290,8 +293,7 @@ PUBLIC_SUPABASE_ANON_KEY=<your_key>
 
 ## Next Steps Priority
 
-1. **Run slug DB migration** — add `slug` column and backfill existing houses (SQL in SETUP.md). Must do before deploying or slug-based links will 404.
-2. **Add pagination to house list** — most pressing technical gap before heavy use
+1. **Add pagination to house list** — most pressing technical gap before heavy use
 3. **Seed data** — source 50–100 initial houses (owner)
 4. **About/History content** — page exists, needs copy (owner)
 5. **Soft launch to Facebook group** — get feedback, drive initial submissions

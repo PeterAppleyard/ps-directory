@@ -36,34 +36,18 @@
 - Full lightbox gallery, share button, stories section all implemented
 
 ### 3. Create About/History Section
-**Status**: Parked — awaiting content from owner
+**Status**: ✅ Complete (Mar 2026 — simplified editorial version)
 **Priority**: LOW
-**Description**: Educational content about Pettit & Sevitt
+**Description**: Two-section editorial page: verified P&S history + Pete's personal note
 
 **Route**: `src/routes/about/+page.svelte`
 
-**Content Needed** (from business owner):
-- [ ] P&S company history
-- [ ] Timeline of key projects/milestones
-- [ ] Explanation of different house styles
-- [ ] Photos/scans of original advertisements
-- [ ] Information about Sydney School movement
-- [ ] Preservation context
-
-**Tasks**:
-- [ ] Create page structure with sections
-- [ ] Implement responsive timeline component
-- [ ] Add style comparison section (Lowline vs Highline vs Split-level)
-- [ ] Include original ad imagery (once sourced/licensed)
-- [ ] Write copy (business owner to provide)
-- [ ] Add "Learn More" resources section
-- [ ] Link to external resources (Powerhouse Museum, etc)
-
-**Acceptance Criteria**:
-- Educational and engaging
-- Visually interesting (use archival imagery)
-- Matches site aesthetic
-- Mobile-friendly reading experience
+**Implementation**:
+- Section 01: Verified company history (founding, Woolley/Dysart, 3,500 homes, display villages, Sydney School, Don's Party)
+- Section 02: Pete's personal statement about the archive's purpose
+- Dark masthead with "Pettit+" Sevitt" branding (hairline Inter + for typographic effect)
+- Pull quote: Woolley's real quote
+- All unverified claims removed; Harry Seidler correctly noted as 1 exhibition home only
 
 ### 3b. SEO-Friendly Slug URLs
 **Status**: ✅ Complete (Mar 2026)
@@ -76,7 +60,7 @@
 - Route `house/[slug]` handles slugs and UUID params (UUID → 301 redirect to slug)
 - Slug stored in `houses.slug` column (UNIQUE, nullable for backfill compatibility)
 - All URL references throughout app, emails, map, admin panel updated
-- **SQL migration still needed**: Run the migration in SETUP.md to add the `slug` column and backfill existing houses
+- ✅ SQL migration complete — `slug` column live and all existing houses backfilled
 
 ---
 
@@ -96,30 +80,18 @@
 - No server-side dependency (no sharp needed)
 
 ### 5. Admin Moderation Dashboard
-**Status**: ✅ Complete
+**Status**: ✅ Complete + Performance Optimised (Mar 2026)
 **Priority**: HIGH
 **Description**: Interface to approve/reject pending house submissions
 
 **Route**: `src/routes/admin/+page.svelte`
 
-**Tasks**:
-- [ ] Create admin route (protected)
-- [ ] Implement simple admin authentication
-  - [ ] Option A: Use Supabase Auth with admin role
-  - [ ] Option B: Simple password protection via environment variable
-- [ ] List all pending houses
-- [ ] Show house details + images
-- [ ] Add approve/reject buttons
-- [ ] Update house status in database
-- [ ] Add verification notes field
-- [ ] Include bulk actions (approve/reject multiple)
-- [ ] Send email notification to contributor (optional)
-
-**Acceptance Criteria**:
-- Only authorized user can access
-- Can review submissions efficiently
-- Clear approve/reject workflow
-- Changes reflected immediately
+**Completed this session**:
+- ✅ Delete listing — server action cleans up storage + images + house row; buttons in listing row and edit panel
+- ✅ Performance: all load queries parallelised with `Promise.all`; published house images no longer pre-fetched
+- ✅ Optimistic UI: approve/reject/delete/setFeatured/approveStory/edit all update local state immediately — no more `invalidateAll()` on every button press (eliminated ~2s delay)
+- ✅ Settings theme: fixed settings page save not applying to layout (added `$effect` to sync `data.theme`)
+- ✅ Sidebar nav: "Pending Review", "Published", "Quick Add" links now actually switch tabs (`?tab=` query params)
 
 ### 6. House Search Functionality
 **Status**: ✅ Complete
@@ -211,6 +183,10 @@
 - [ ] Add caching headers
 - [ ] Minimize JavaScript bundle
 - [ ] Run Lighthouse audits and address issues
+
+**Completed this session**:
+- ✅ Admin load queries parallelised (5 sequential → 2 parallel rounds)
+- ✅ Admin optimistic UI (no full reload on every action)
 
 ## 🧪 Testing & Quality (Future)
 
@@ -311,7 +287,7 @@
 1. No pagination on house list — will become a performance issue as data grows
 2. No loading indicators on data fetch (homepage)
 3. No error handling for failed Supabase queries
-4. **Slug DB migration not yet run** — need to run SQL in SETUP.md to add `slug` column and backfill existing houses before deploying slug changes to production
+4. ~~Slug DB migration~~ — ✅ done, `slug` column live and backfilled
 
 ### Technical Debt
 - [ ] Add error boundaries
