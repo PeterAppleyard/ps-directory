@@ -73,40 +73,20 @@
 					The Architect
 				</h2>
 			</div>
-			<!-- Two columns: Woolley primary, Seidler callout -->
-			<div class="grid grid-cols-1 divide-y-2 md:divide-y-0 md:grid-cols-[1fr_320px] md:divide-x-2 divide-stone-900">
-				<!-- Woolley -->
-				<div class="px-8 py-12 md:py-16 space-y-5 text-stone-600 leading-relaxed text-[15px]">
-					<p>
-						<strong class="font-bold text-stone-900">Ken Woolley</strong> (1933–2015) was the creative force behind Pettit &amp; Sevitt for fifteen years. Graduating from the University of Sydney in 1955 with First Class Honours, the University Medal, and a Byera Hadley Travelling Scholarship that took him through the USA, Europe, and UK, Woolley brought genuine international ambition to what was then a modest local industry.
-					</p>
-					<p>
-						He designed over <strong class="font-bold text-stone-900">3,500 P&amp;S homes</strong> — making him arguably Australia's most prolific residential architect. What set P&amp;S apart from every other project builder was that buyers didn't deal with a salesman. They met the architect directly.
-					</p>
-					<div class="border-l-4 border-stone-900 pl-5 my-6">
-						<p class="text-[13px] font-bold tracking-normal text-stone-500 uppercase mb-2">The P&amp;S Consultation</p>
-						<p class="text-[15px] text-stone-700 leading-relaxed">Buyers met personally with Woolley or one of his peers to discuss their site, orientation, sun, views, and modifications to the standard plan. Kitchen configurations, built-in furniture, window placement — all negotiable. You weren't just buying a house, you were working with Australia's leading architects to design your home.</p>
-					</div>
-					<p>
-						Woolley won the Wilkinson Award — New South Wales' highest residential architecture prize — <strong class="font-bold text-stone-900">four times</strong>, the only architect ever to achieve this. He received the RAIA Gold Medal in 1993, Australia's highest architectural honour, and was posthumously described as "the most complete architect of the modern era in Australia." He is as known for the Fisher Library at Sydney University and the Park Hyatt at Campbell's Cove as he is for the houses that shaped Sydney's North Shore.
-					</p>
+			<div class="px-8 py-12 md:py-16 space-y-5 text-stone-600 leading-relaxed text-[15px] max-w-3xl">
+				<p>
+					<strong class="font-bold text-stone-900">Ken Woolley</strong> (1933–2015) was the creative force behind Pettit &amp; Sevitt for fifteen years. Graduating from the University of Sydney in 1955 with First Class Honours, the University Medal, and a Byera Hadley Travelling Scholarship that took him through the USA, Europe, and UK, Woolley brought genuine international ambition to what was then a modest local industry.
+				</p>
+				<p>
+					He designed over <strong class="font-bold text-stone-900">3,500 P&amp;S homes</strong> — making him arguably Australia's most prolific residential architect. What set P&amp;S apart from every other project builder was that buyers didn't deal with a salesman. They met the architect directly.
+				</p>
+				<div class="border-l-4 border-stone-900 pl-5 my-6">
+					<p class="text-[13px] font-bold tracking-normal text-stone-500 uppercase mb-2">The P&amp;S Consultation</p>
+					<p class="text-[15px] text-stone-700 leading-relaxed">Buyers met personally with Woolley or one of his peers to discuss their site, orientation, sun, views, and modifications to the standard plan. Kitchen configurations, built-in furniture, window placement — all negotiable. You weren't just buying a house, you were working with Australia's leading architects to design your home.</p>
 				</div>
-				<!-- Seidler callout -->
-				<div class="bg-stone-900 px-8 py-12 md:py-16 space-y-5">
-					<p class="text-[10px] font-bold tracking-normal text-stone-500">Also designed for P&amp;S</p>
-					<h3 class="font-black text-2xl tracking-tight text-white md:text-3xl">
-						Harry<br />Seidler
-					</h3>
-					<p class="text-sm leading-relaxed text-stone-400">
-						Vienna-born, Harvard-trained under Walter Gropius and Marcel Breuer — the founding masters of the Bauhaus. Seidler arrived in Australia in 1948 and brought pure modernist principles to a country largely untouched by them.
-					</p>
-					<p class="text-sm leading-relaxed text-stone-400">
-						He designed select homes for P&amp;S in the 1960s, lending his international reputation to the brand. His Rose Seidler House in Wahroonga (1950) had already caused a sensation; when his name appeared in P&amp;S advertising, it meant something.
-					</p>
-					<p class="text-[10px] font-bold tracking-normal text-stone-600 mt-6">
-						RAIA Gold Medal 1976 &nbsp;·&nbsp; RIBA Gold Medal 1996
-					</p>
-				</div>
+				<p>
+					Woolley won the Wilkinson Award — New South Wales' highest residential architecture prize — <strong class="font-bold text-stone-900">four times</strong>, the only architect ever to achieve this. He received the RAIA Gold Medal in 1993, Australia's highest architectural honour, and was posthumously described as "the most complete architect of the modern era in Australia." He is as known for the Fisher Library at Sydney University and the Park Hyatt at Campbell's Cove as he is for the houses that shaped Sydney's North Shore.
+				</p>
 			</div>
 		</div>
 	</section>
@@ -267,7 +247,7 @@
 						<p><strong>PETTIT:</strong> "People keep asking why our houses look different."</p>
 						<p><strong>SEVITT:</strong> "That's because they are different. They're designed by architects."</p>
 						<p><strong>PETTIT:</strong> "Real architects?"</p>
-						<p><strong>SEVITT:</strong> "Ken Woolley. Harry Seidler. Names like that."</p>
+						<p><strong>SEVITT:</strong> "Ken Woolley. Names like that."</p>
 						<p><strong>PETTIT:</strong> "And people can afford them?"</p>
 						<p><strong>SEVITT:</strong> "That's the whole point."</p>
 					</div>
@@ -376,7 +356,7 @@
 				<div class="px-8 py-12 space-y-4">
 					<p class="text-[10px] font-bold tracking-normal text-stone-400 uppercase">The Eichler Comparison</p>
 					<p class="text-sm leading-relaxed text-stone-600">
-						In California, <strong class="font-semibold text-stone-900">Joseph Eichler</strong> commissioned leading architects — Quincy Jones, Robert Anshen — to build over 11,000 mid-century modern homes for middle-class families. P&amp;S did the same in Sydney, at 3,500 homes, with Woolley, Seidler, and Jack. Same era, same mission, same enduring desirability. Eichler influenced Steve Jobs' belief in design for the many; P&amp;S shaped how an entire generation of Sydneysiders understood what a home could be.
+						In California, <strong class="font-semibold text-stone-900">Joseph Eichler</strong> commissioned leading architects — Quincy Jones, Robert Anshen — to build over 11,000 mid-century modern homes for middle-class families. P&amp;S did the same in Sydney, at 3,500 homes, with Woolley leading the design effort. Same era, same mission, same enduring desirability. Eichler influenced Steve Jobs' belief in design for the many; P&amp;S shaped how an entire generation of Sydneysiders understood what a home could be.
 					</p>
 				</div>
 				<div class="px-8 py-12 space-y-4">
