@@ -3,15 +3,15 @@
 	<!-- Masthead -->
 	<section class="ink-hero px-6 py-20 md:py-32">
 		<div class="mx-auto max-w-5xl">
-			<p class="mb-10 text-[10px] font-bold tracking-normal text-stone-500">
+			<p class="mb-10 text-[10px] font-bold tracking-normal text-[#faf2e5]/50">
 				Sydney, Australia &nbsp;·&nbsp; 1961–1977/78
 			</p>
-			<h1 class="font-black leading-none tracking-tight text-white"
+			<h1 class="font-black leading-none tracking-tight text-[#faf2e5]"
 				style="font-size: clamp(4rem, 15vw, 14rem); line-height: 0.9;">
 				Pettit<span style="font-size: 0.75em; font-weight: 100; font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; position: relative; top: 0.32em; line-height: 1;">+</span><span style="display: block; margin-top: -0.15em;">Sevitt</span>
 			</h1>
-			<div class="mt-10 h-px bg-stone-700"></div>
-			<p class="mt-8 max-w-2xl text-base text-stone-400 leading-relaxed md:text-lg">
+			<div class="mt-10 h-px bg-[#faf2e5]/20"></div>
+			<p class="mt-8 max-w-2xl text-base text-[#faf2e5]/60 leading-relaxed md:text-lg">
 				Pioneers of affordable modernist living.
 			</p>
 		</div>
@@ -88,17 +88,17 @@
 	<section class="ink-hero px-6 py-20 md:py-24">
 		<div class="mx-auto max-w-5xl flex flex-col gap-10 md:flex-row md:items-center md:justify-between">
 			<div>
-				<p class="mb-4 text-[10px] font-bold tracking-normal text-stone-500">
+				<p class="mb-4 text-[10px] font-bold tracking-normal text-[#faf2e5]/50">
 					Contribute
 				</p>
-				<h3 class="font-black leading-none tracking-tight text-white"
+				<h3 class="font-black leading-none tracking-tight text-[#faf2e5]"
 					style="font-size: clamp(2.5rem, 7vw, 6rem); line-height: 0.95;">
 					Know a<br />P&amp;S Home?
 				</h3>
 			</div>
 			<a
 				href="/submit"
-				class="inline-block shrink-0 border-2 border-white px-10 py-5 text-xs font-bold tracking-normal text-white transition hover:bg-white hover:text-stone-900"
+				class="inline-block shrink-0 border-2 border-[#faf2e5] px-10 py-5 text-xs font-bold tracking-normal text-[#faf2e5] transition hover:bg-[#faf2e5] hover:text-stone-900"
 			>
 				Submit to the Directory
 			</a>

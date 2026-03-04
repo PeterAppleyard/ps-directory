@@ -26,6 +26,14 @@
 		return map[style] ?? null
 	}
 
+	const PAGE_SIZE = 18
+	let visibleCount = $state(PAGE_SIZE)
+
+	$effect(() => {
+		selectedSuburb; selectedStyle; searchQuery
+		visibleCount = PAGE_SIZE
+	})
+
 	const filtered = $derived.by(() => {
 		const q = searchQuery.trim().toLowerCase()
 		return data.houses.filter((h: House) => {
@@ -47,12 +55,12 @@
 	<!-- Hero — hidden in map mode -->
 	<section class="ink-hero px-6 py-16 md:py-24 {view === 'map' ? 'hidden' : ''}">
 		<div class="mx-auto max-w-6xl">
-			<h1 class="font-black leading-none tracking-tight text-white"
+			<h1 class="font-black leading-none tracking-tight text-[#faf2e5]"
 				style="font-size: clamp(4rem, 15vw, 14rem); line-height: 0.9;">
 				Pettit<span style="font-size: 0.75em; font-weight: 100; font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; position: relative; top: 0.32em; line-height: 1;">+</span><span style="display: block; margin-top: -0.15em;">Sevitt</span>
 			</h1>
-			<p class="mt-8 text-base text-stone-400 leading-relaxed">
-				A community archive.
+			<p class="mt-8 text-base text-[#faf2e5]/60 leading-relaxed">
+				An Independent Register of Pettit &amp; Sevitt Homes
 			</p>
 		</div>
 	</section>
@@ -235,7 +243,7 @@
 			<!-- Remaining cards -->
 			{#if filtered.length > 1}
 				<div class="grid grid-cols-1 gap-px bg-stone-200 border border-stone-200 border-t-0 sm:grid-cols-2 lg:grid-cols-3">
-					{#each filtered.slice(1) as house (house.id)}
+					{#each filtered.slice(1, visibleCount) as house (house.id)}
 						<a
 							href="/house/{house.slug ?? house.id}"
 							class="group flex flex-col bg-white transition-colors hover:bg-stone-50"
@@ -288,6 +296,20 @@
 						</a>
 					{/each}
 				</div>
+
+			{#if filtered.length > visibleCount}
+				<div class="mt-12 flex flex-col items-center gap-4">
+					<p class="text-xs text-stone-400">
+						Showing {visibleCount - 1} of {filtered.length - 1}
+					</p>
+					<button
+						onclick={() => (visibleCount += PAGE_SIZE)}
+						class="border-2 border-stone-900 px-8 py-3 text-xs font-bold tracking-normal text-stone-900 transition hover:bg-stone-900 hover:text-white"
+					>
+						Load More
+					</button>
+				</div>
+			{/if}
 			{/if}
 		{/if}
 	</section>

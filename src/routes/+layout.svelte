@@ -56,8 +56,8 @@
 		<div class="flex items-center justify-between px-8 py-5">
 			<!-- Logo -->
 			<a href="/" class="flex flex-col gap-1 transition-opacity hover:opacity-70">
-				<img src="/images/psa-logo.svg" alt="PS Archive" height="36" class="h-9 w-auto" />
-				<span class="text-[9px] font-bold tracking-normal text-stone-400">Pettit &amp; Sevitt Archive</span>
+				<img src="/images/psa-logo.svg" alt="PS Archive" height="41" class="h-[41px] w-auto" />
+				<span class="text-[10px] font-bold tracking-normal text-stone-400 text-center">Pettit &amp; Sevitt Archive</span>
 			</a>
 
 			<!-- Nav -->
