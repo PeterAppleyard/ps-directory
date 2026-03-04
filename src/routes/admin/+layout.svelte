@@ -184,7 +184,7 @@
 					{#if isAdmin}
 						<!-- Pending -->
 						<a
-							href="/admin#pending"
+							href="/admin?tab=pending"
 							onclick={closeSidebar}
 							class="flex items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition text-slate-300 hover:bg-slate-700 dark:hover:bg-slate-800 hover:text-white"
 						>
@@ -199,7 +199,7 @@
 
 					<!-- Published -->
 					<a
-						href="/admin#published"
+						href="/admin?tab=published"
 						onclick={closeSidebar}
 						class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition text-slate-300 hover:bg-slate-700 dark:hover:bg-slate-800 hover:text-white"
 					>
@@ -211,7 +211,7 @@
 
 					<!-- Quick Add -->
 					<a
-						href="/admin#quickadd"
+						href="/admin?tab=quickadd"
 						onclick={closeSidebar}
 						class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition text-slate-300 hover:bg-slate-700 dark:hover:bg-slate-800 hover:text-white"
 					>

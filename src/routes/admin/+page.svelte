@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms'
+	import { page } from '$app/stores'
 	import type { House, Image, HouseStyleRecord, HouseCondition, PropertyStory } from '$lib/types'
 	import type { ActionData, PageData } from './$types'
 	import { PUBLIC_MAPBOX_TOKEN } from '$env/static/public'
@@ -129,6 +130,14 @@
 	const initialTab: 'pending' | 'published' =
 		data.role === 'admin' || data.role === 'super_admin' ? 'pending' : 'published'
 	let activeTab = $state<'pending' | 'published'>(initialTab)
+
+	// Switch tab and open Quick Add when driven by sidebar nav links (?tab=...)
+	$effect(() => {
+		const tab = $page.url.searchParams.get('tab')
+		if (tab === 'pending' && isAdmin) activeTab = 'pending'
+		else if (tab === 'published') activeTab = 'published'
+		else if (tab === 'quickadd') { activeTab = 'pending'; qaOpen = true }
+	})
 
 	let expandedNotes: Record<string, boolean> = $state({})
 	let notesText: Record<string, string> = $state({})
