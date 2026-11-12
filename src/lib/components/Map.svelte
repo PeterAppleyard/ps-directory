@@ -1,12 +1,10 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte'
 	import { PUBLIC_MAPBOX_TOKEN } from '$env/static/public'
-	import type { House } from '$lib/types'
+	import type { MapHouse } from '$lib/houses'
 	import 'mapbox-gl/dist/mapbox-gl.css'
 
-	type HouseWithThumb = House & { thumbnail: string | null }
-
-	let { houses }: { houses: HouseWithThumb[] } = $props()
+	let { houses }: { houses: MapHouse[] } = $props()
 
 	let mapContainer: HTMLDivElement
 	let map: mapboxgl.Map | null = null
@@ -47,6 +45,7 @@
 						},
 						properties: {
 							id: h.id,
+							slug: h.slug,
 							suburb: h.address_suburb,
 							style: h.style,
 							year: h.year_built,

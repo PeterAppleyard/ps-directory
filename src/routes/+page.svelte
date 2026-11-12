@@ -1,22 +1,24 @@
 <script lang="ts">
-	import type { House } from '$lib/types'
+	import { goto } from '$app/navigation'
+	import { navigating, page } from '$app/state'
+	import { untrack } from 'svelte'
 	import Map from '$lib/components/Map.svelte'
+	import { fetchHousePage, type CardHouse } from '$lib/houses'
 	import { stripStreetNumber } from '$lib/utils/compress'
+	import type { PageData } from './$types'
 
-	let { data }: { data: { houses: (House & { thumbnail: string | null })[] } } = $props()
+	let { data }: { data: PageData } = $props()
 
-	let selectedSuburb = $state('')
-	let selectedStyle = $state('')
-	let searchQuery = $state('')
-	let view = $state<'grid' | 'map'>('grid')
+	// Cards loaded so far — resets whenever the filters change and the page data reloads
+	let houses = $derived<CardHouse[]>(data.houses)
+	let loadingMore = $state(false)
+	let loadMoreError = $state('')
 
-	const suburbs = $derived(
-		[...new Set(data.houses.map((h: House) => h.address_suburb))].sort()
-	)
+	// The search box is local state so typing isn't interrupted by the debounced URL update
+	let searchQuery = $state(untrack(() => data.filters.q))
+	let searchTimer: ReturnType<typeof setTimeout> | undefined
 
-	const styles = $derived(
-		[...new Set(data.houses.map((h: House) => h.style))].sort()
-	)
+	const isFiltering = $derived(navigating.to?.url.pathname === '/')
 
 	function styleFallback(style: string): string | null {
 		const map: Record<string, string> = {
@@ -26,34 +28,45 @@
 		return map[style] ?? null
 	}
 
-	const PAGE_SIZE = 18
-	let visibleCount = $state(PAGE_SIZE)
+	/** Updates one URL param (dropping it when empty) — the load function re-queries from the URL. */
+	function setParam(key: string, value: string) {
+		const url = new URL(page.url)
+		if (value) url.searchParams.set(key, value)
+		else url.searchParams.delete(key)
+		goto(url, { replaceState: true, keepFocus: true, noScroll: true })
+	}
 
-	$effect(() => {
-		selectedSuburb; selectedStyle; searchQuery
-		visibleCount = PAGE_SIZE
-	})
+	function onSearchInput() {
+		clearTimeout(searchTimer)
+		searchTimer = setTimeout(() => setParam('q', searchQuery.trim()), 300)
+	}
 
-	const filtered = $derived.by(() => {
-		const q = searchQuery.trim().toLowerCase()
-		return data.houses.filter((h: House) => {
-			const matchSuburb = !selectedSuburb || h.address_suburb === selectedSuburb
-			const matchStyle = !selectedStyle || h.style === selectedStyle
-			const matchSearch = !q || [
-				h.address_suburb,
-				h.address_street,
-				h.style,
-				h.description ?? '',
-				h.builder_name ?? ''
-			].some((field) => field.toLowerCase().includes(q))
-			return matchSuburb && matchStyle && matchSearch
-		})
-	})
+	function clearFilters() {
+		clearTimeout(searchTimer)
+		searchQuery = ''
+		const url = new URL(page.url)
+		for (const key of ['q', 'suburb', 'style']) url.searchParams.delete(key)
+		goto(url, { replaceState: true, noScroll: true })
+	}
+
+	async function loadMore() {
+		loadingMore = true
+		loadMoreError = ''
+		try {
+			const next = await fetchHousePage(data.filters, houses.length)
+			houses = [...houses, ...next.houses]
+		} catch (err) {
+			console.error('Failed to load more houses:', err)
+			loadMoreError = 'Couldn’t load more homes. Please try again.'
+		} finally {
+			loadingMore = false
+		}
+	}
 </script>
 
 <main class="min-h-screen bg-white">
 	<!-- Hero — hidden in map mode -->
-	<section class="ink-hero px-6 py-16 md:py-24 {view === 'map' ? 'hidden' : ''}">
+	<section class="ink-hero px-6 py-16 md:py-24 {data.view === 'map' ? 'hidden' : ''}">
 		<div class="mx-auto max-w-6xl">
 			<h1 class="font-black leading-none tracking-tight text-[#faf2e5]"
 				style="font-size: clamp(4rem, 15vw, 14rem); line-height: 0.9;">
@@ -78,6 +91,7 @@
 					id="search"
 					type="search"
 					bind:value={searchQuery}
+					oninput={onSearchInput}
 					placeholder="Suburb, street, style…"
 					class="w-full border border-stone-300 bg-white px-3 py-1.5 text-sm text-stone-800 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-stone-900"
 				/>
@@ -92,11 +106,12 @@
 				</label>
 				<select
 					id="suburb"
-					bind:value={selectedSuburb}
+					value={data.filters.suburb}
+					onchange={(e) => setParam('suburb', e.currentTarget.value)}
 					class="border border-stone-300 bg-white px-3 py-1.5 text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-stone-900"
 				>
 					<option value="">All</option>
-					{#each suburbs as suburb}
+					{#each data.options.suburbs as suburb}
 						<option value={suburb}>{suburb}</option>
 					{/each}
 				</select>
@@ -109,34 +124,35 @@
 				</label>
 				<select
 					id="style"
-					bind:value={selectedStyle}
+					value={data.filters.style}
+					onchange={(e) => setParam('style', e.currentTarget.value)}
 					class="border border-stone-300 bg-white px-3 py-1.5 text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-stone-900"
 				>
 					<option value="">All</option>
-					{#each styles as style}
+					{#each data.options.styles as style}
 						<option value={style}>{style}</option>
 					{/each}
 				</select>
 			</div>
 
 			<p class="ml-auto text-xs text-stone-400 shrink-0">
-				<span class="font-bold text-accent">{filtered.length}</span> of {data.houses.length}
+				<span class="font-bold text-accent">{data.count}</span> of {data.options.total}
 			</p>
 
 			<!-- View toggle -->
 			<div class="flex shrink-0 border border-stone-300 bg-white">
 				<button
-					onclick={() => (view = 'grid')}
+					onclick={() => setParam('view', '')}
 					class="px-3 py-1.5 text-[10px] font-bold tracking-normal transition
-						{view === 'grid' ? 'bg-stone-900 text-white' : 'text-stone-400 hover:text-stone-900'}"
+						{data.view === 'grid' ? 'bg-stone-900 text-white' : 'text-stone-400 hover:text-stone-900'}"
 					aria-label="Grid view"
 				>
 					Grid
 				</button>
 				<button
-					onclick={() => (view = 'map')}
+					onclick={() => setParam('view', 'map')}
 					class="px-3 py-1.5 text-[10px] font-bold tracking-normal transition
-						{view === 'map' ? 'bg-stone-900 text-white' : 'text-stone-400 hover:text-stone-900'}"
+						{data.view === 'map' ? 'bg-stone-900 text-white' : 'text-stone-400 hover:text-stone-900'}"
 					aria-label="Map view"
 				>
 					Map
@@ -146,16 +162,18 @@
 	</section>
 
 	<!-- Map view — nav ~74px + filter bar ~56px = 130px -->
-	{#if view === 'map'}
+	{#if data.view === 'map'}
 		<div style="position: relative; height: calc(100vh - 130px);">
-			<Map houses={filtered} />
+			{#key data.mapHouses}
+				<Map houses={data.mapHouses} />
+			{/key}
 		</div>
 	{/if}
 
 	<!-- Grid -->
-	{#if view === 'grid'}
-	<section class="mx-auto max-w-6xl px-6 py-12">
-		{#if data.houses.length === 0}
+	{#if data.view === 'grid'}
+	<section class="mx-auto max-w-6xl px-6 py-12 transition-opacity {isFiltering ? 'opacity-40' : ''}" aria-busy={isFiltering}>
+		{#if data.options.total === 0}
 			<div class="py-24 text-center">
 				<p class="text-sm tracking-normal text-stone-400">No homes in the directory yet.</p>
 				<a
@@ -165,11 +183,11 @@
 					Submit a Home
 				</a>
 			</div>
-		{:else if filtered.length === 0}
+		{:else if houses.length === 0}
 			<div class="py-24 text-center">
 				<p class="text-sm tracking-normal text-stone-400">No homes match your search.</p>
 				<button
-					onclick={() => { selectedSuburb = ''; selectedStyle = ''; searchQuery = '' }}
+					onclick={clearFilters}
 					class="mt-6 inline-block border-2 border-stone-900 px-6 py-3 text-xs font-bold tracking-normal text-stone-900 transition hover:bg-stone-900 hover:text-white"
 				>
 					Clear Search
@@ -178,7 +196,7 @@
 		{:else}
 			<!-- Featured first card -->
 			<a
-				href="/house/{filtered[0].slug ?? filtered[0].id}"
+				href="/house/{houses[0].slug ?? houses[0].id}"
 				class="group mb-px flex flex-col border border-stone-200 bg-white md:flex-row"
 			>
 				<!-- Left: text -->
@@ -186,29 +204,29 @@
 					<div>
 						<div class="mb-3 flex items-center gap-3">
 							<p class="text-[10px] font-bold tracking-normal text-stone-400 group-hover:text-stone-500">
-								{filtered[0].style}
+								{houses[0].style}
 							</p>
-							{#if filtered[0].is_featured}
+							{#if houses[0].is_featured}
 								<span class="text-[9px] font-bold tracking-widest text-amber-600 uppercase">Featured</span>
 							{/if}
 						</div>
 						<h3 class="mt-3 text-4xl font-black uppercase leading-tight tracking-tight text-stone-900 group-hover:text-white md:text-6xl">
-							{filtered[0].address_suburb}
+							{houses[0].address_suburb}
 						</h3>
-						{#if filtered[0].address_street}
+						{#if houses[0].address_street}
 							<p class="mt-3 text-sm text-stone-500 group-hover:text-stone-400">
-								{stripStreetNumber(filtered[0].address_street)}
+								{stripStreetNumber(houses[0].address_street)}
 							</p>
 						{/if}
 					</div>
 					<div class="mt-8 flex items-end justify-between">
 						<div class="flex flex-col gap-2">
-							{#if filtered[0].year_built}
-								<p class="text-xs text-stone-400 group-hover:text-stone-500">{filtered[0].year_built}</p>
+							{#if houses[0].year_built}
+								<p class="text-xs text-stone-400 group-hover:text-stone-500">{houses[0].year_built}</p>
 							{/if}
-							{#if filtered[0].condition}
+							{#if houses[0].condition}
 								<span class="inline-block border border-stone-200 px-2 py-0.5 text-[10px] tracking-normal text-stone-500 group-hover:border-stone-700 group-hover:text-stone-400">
-									{filtered[0].condition}
+									{houses[0].condition}
 								</span>
 							{/if}
 						</div>
@@ -220,16 +238,16 @@
 
 				<!-- Right: image -->
 				<div class="aspect-[4/3] w-full overflow-hidden bg-stone-100 md:aspect-auto md:w-3/5">
-					{#if filtered[0].thumbnail}
+					{#if houses[0].thumbnail}
 						<img
-							src={filtered[0].thumbnail}
-							alt="{filtered[0].address_suburb} — {stripStreetNumber(filtered[0].address_street)}"
+							src={houses[0].thumbnail}
+							alt="{houses[0].address_suburb} — {stripStreetNumber(houses[0].address_street)}"
 							class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
 						/>
-					{:else if styleFallback(filtered[0].style)}
+					{:else if styleFallback(houses[0].style)}
 						<img
-							src={styleFallback(filtered[0].style)!}
-							alt="Illustrated {filtered[0].style} home"
+							src={styleFallback(houses[0].style)!}
+							alt="Illustrated {houses[0].style} home"
 							class="h-full w-full object-cover opacity-50 transition-transform duration-700 group-hover:scale-105"
 						/>
 					{:else}
@@ -241,9 +259,9 @@
 			</a>
 
 			<!-- Remaining cards -->
-			{#if filtered.length > 1}
+			{#if houses.length > 1}
 				<div class="grid grid-cols-1 gap-px bg-stone-200 border border-stone-200 border-t-0 sm:grid-cols-2 lg:grid-cols-3">
-					{#each filtered.slice(1, visibleCount) as house (house.id)}
+					{#each houses.slice(1) as house (house.id)}
 						<a
 							href="/house/{house.slug ?? house.id}"
 							class="group flex flex-col bg-white transition-colors hover:bg-stone-50"
@@ -297,17 +315,21 @@
 					{/each}
 				</div>
 
-			{#if filtered.length > visibleCount}
+			{#if houses.length < data.count}
 				<div class="mt-12 flex flex-col items-center gap-4">
 					<p class="text-xs text-stone-400">
-						Showing {visibleCount - 1} of {filtered.length - 1}
+						Showing {houses.length} of {data.count}
 					</p>
 					<button
-						onclick={() => (visibleCount += PAGE_SIZE)}
-						class="border-2 border-stone-900 px-8 py-3 text-xs font-bold tracking-normal text-stone-900 transition hover:bg-stone-900 hover:text-white"
+						onclick={loadMore}
+						disabled={loadingMore}
+						class="border-2 border-stone-900 px-8 py-3 text-xs font-bold tracking-normal text-stone-900 transition hover:bg-stone-900 hover:text-white disabled:cursor-wait disabled:opacity-50"
 					>
-						Load More
+						{loadingMore ? 'Loading…' : 'Load More'}
 					</button>
+					{#if loadMoreError}
+						<p class="text-xs text-red-700" role="alert">{loadMoreError}</p>
+					{/if}
 				</div>
 			{/if}
 			{/if}

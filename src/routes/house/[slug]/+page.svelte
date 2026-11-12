@@ -1,10 +1,10 @@
 <script lang="ts">
-	import type { House, Image, PropertyStory } from '$lib/types'
+	import type { Image, PropertyStory, PublicHouse } from '$lib/types'
 	import { stripStreetNumber } from '$lib/utils/compress'
 
 	type ImageWithUrl = Image & { url: string }
 
-	let { data }: { data: { house: House; images: ImageWithUrl[]; stories: PropertyStory[] } } = $props()
+	let { data }: { data: { house: PublicHouse; images: ImageWithUrl[]; stories: PropertyStory[] } } = $props()
 
 	const house = $derived(data.house)
 	const images = $derived(data.images)

@@ -25,6 +25,12 @@ export interface House {
 	is_featured: boolean
 }
 
+/** A house as the public (anon) client can see it — private columns are revoked at the DB level. */
+export type PublicHouse = Omit<
+	House,
+	'submitter_email' | 'verification_notes' | 'contributor_id' | 'verified_by'
+>
+
 export interface Image {
 	id: string
 	created_at: string

@@ -4,6 +4,16 @@ import { env } from '$env/dynamic/private'
 
 const FONT = 'Helvetica, Arial, sans-serif'
 
+/** Addresses and notes come from public submissions — escape before putting them in HTML. */
+function escapeHtml(value: string): string {
+	return value
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&#39;')
+}
+
 function renderEmailLayout(opts: { bodyHtml: string; siteUrl: string }) {
 	return `
 		<div style="font-family: ${FONT}; max-width: 560px; padding: 24px 16px;">
@@ -38,14 +48,14 @@ export async function sendNewSubmissionEmail(opts: {
 	const adminUrl = `${opts.siteUrl}/admin`
 	const bodyHtml = `
 		<p style="color: #111;">A new Pettit &amp; Sevitt home has been submitted for review.</p>
-		<p style="color: #111;"><strong>${opts.address}, ${opts.suburb}</strong></p>
+		<p style="color: #111;"><strong>${escapeHtml(opts.address)}, ${escapeHtml(opts.suburb)}</strong></p>
 		<p><a href="${adminUrl}" style="color: #000; font-weight: bold;">Review in Admin →</a></p>
 	`
 
 	const resend = getResend()
 	const { error } = await resend.emails.send({
 		from: FROM,
-		reply_to: REPLY_TO,
+		replyTo: REPLY_TO,
 		to: opts.to,
 		subject: `New submission: ${opts.address}, ${opts.suburb}`,
 		html: renderEmailLayout({ bodyHtml, siteUrl: opts.siteUrl })
@@ -72,10 +82,10 @@ export async function sendStatusUpdateEmail(opts: {
 	const bodyHtml = `
 		<p style="color: #111;">${approved ? 'Great news!' : 'Thanks for your submission.'}</p>
 		<p style="color: #111;">
-			Your submission for <strong>${opts.address}, ${opts.suburb}</strong> has been
+			Your submission for <strong>${escapeHtml(opts.address)}, ${escapeHtml(opts.suburb)}</strong> has been
 			<strong>${approved ? 'published to the directory' : 'reviewed but not approved at this time'}</strong>.
 		</p>
-		${opts.notes ? `<p style="color: #555;">${opts.notes}</p>` : ''}
+		${opts.notes ? `<p style="color: #555;">${escapeHtml(opts.notes)}</p>` : ''}
 		${
 			approved
 				? `<p><a href="${opts.siteUrl}/house/${opts.houseSlug}" style="color: #000; font-weight: bold;">View your listing →</a></p>`
@@ -86,7 +96,7 @@ export async function sendStatusUpdateEmail(opts: {
 	const resend = getResend()
 	const { error } = await resend.emails.send({
 		from: FROM,
-		reply_to: REPLY_TO,
+		replyTo: REPLY_TO,
 		to: [opts.to],
 		subject: approved
 			? `Your submission has been approved — ${opts.suburb}`

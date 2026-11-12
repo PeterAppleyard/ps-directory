@@ -34,7 +34,7 @@ export const actions: Actions = {
 
 		const { data, error } = await resend.emails.send({
 			from: `PS Archive <${RESEND_FROM_EMAIL}>`,
-			reply_to: env.RESEND_REPLY_TO || undefined,
+			replyTo: env.RESEND_REPLY_TO || undefined,
 			to: [to],
 			subject: 'PS Archive — email test',
 			html: `

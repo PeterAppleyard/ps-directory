@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { supabase } from '$lib/supabase'
-	import type { House } from '$lib/types'
+	import { PUBLIC_HOUSE_COLUMNS } from '$lib/houses'
+	import type { PublicHouse } from '$lib/types'
 
-	let { data }: { data: { house: House | null } } = $props()
+	let { data }: { data: { house: PublicHouse | null } } = $props()
 
 	// House from URL param (?house=slug) is passed via data.house
 	const prefilledHouse = $derived(data.house)
-	let foundHouse = $state<House | null>(null)
+	let foundHouse = $state<PublicHouse | null>(null)
 	let ignorePrefill = $state(false) // true when user clicked "Choose a different property"
 	const theHouse = $derived(ignorePrefill ? foundHouse : (prefilledHouse ?? foundHouse))
 
@@ -40,7 +41,7 @@
 		const looksLikeUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug)
 		const { data, error } = await supabase
 			.from('houses')
-			.select('*')
+			.select(PUBLIC_HOUSE_COLUMNS)
 			.eq(looksLikeUUID ? 'id' : 'slug', slug)
 			.eq('status', 'published')
 			.single()
@@ -50,7 +51,7 @@
 			foundHouse = null
 			return
 		}
-		foundHouse = data as House
+		foundHouse = data as unknown as PublicHouse
 	}
 
 	async function submitStory(e: Event) {

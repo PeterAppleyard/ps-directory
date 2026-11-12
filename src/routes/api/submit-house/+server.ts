@@ -63,7 +63,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
 
 	if (houseErr || !house) {
 		console.error('[submit-house] DB error:', houseErr)
-		return json({ error: houseErr?.message ?? 'Insert failed' }, { status: 500 })
+		return json({ error: 'Could not save the submission' }, { status: 500 })
 	}
 
 	// Notify admins/super_admins who have submission emails enabled and frequency is not 'none'

@@ -1,30 +1,29 @@
-import { supabase } from '$lib/supabase'
 import { error } from '@sveltejs/kit'
-import type { House } from '$lib/types'
+import { fetchFilterOptions, fetchHousePage, fetchMapHouses, filtersFromUrl } from '$lib/houses'
 import type { PageLoad } from './$types'
 
-export const load: PageLoad = async () => {
-	const [{ data: houses, error: housesError }, { data: primaryImages }] = await Promise.all([
-		supabase.from('houses').select('*').eq('status', 'published').order('is_featured', { ascending: false }).order('address_suburb'),
-		supabase.from('images').select('house_id, storage_path').eq('is_primary', true)
-	])
+export const load: PageLoad = async ({ url }) => {
+	const filters = filtersFromUrl(url)
+	const view = url.searchParams.get('view') === 'map' ? 'map' : 'grid'
 
-	if (housesError) {
-		console.error('Failed to fetch houses:', housesError)
+	try {
+		// Map view needs every matching pin; grid view only needs the first page of cards
+		const [options, page, mapHouses] = await Promise.all([
+			fetchFilterOptions(),
+			view === 'grid' ? fetchHousePage(filters) : null,
+			view === 'map' ? fetchMapHouses(filters) : null
+		])
+
+		return {
+			filters,
+			view,
+			options,
+			houses: page?.houses ?? [],
+			count: page?.count ?? mapHouses?.length ?? 0,
+			mapHouses: mapHouses ?? []
+		}
+	} catch (err) {
+		console.error('Failed to fetch houses:', err)
 		error(500, 'Unable to load the directory right now. Please try again.')
 	}
-
-	const primaryByHouse: Record<string, string> = {}
-	;(primaryImages ?? []).forEach((img) => {
-		primaryByHouse[img.house_id] = img.storage_path
-	})
-
-	const housesWithThumbs = ((houses ?? []) as House[]).map((h) => ({
-		...h,
-		thumbnail: primaryByHouse[h.id]
-			? supabase.storage.from('house-images').getPublicUrl(primaryByHouse[h.id]).data.publicUrl
-			: null
-	}))
-
-	return { houses: housesWithThumbs }
 }

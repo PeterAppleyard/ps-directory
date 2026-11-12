@@ -97,7 +97,7 @@
 		<div class="mt-6 rounded-lg border border-red-700 bg-red-950 p-4">
 			<p class="text-sm font-semibold text-red-400 mb-1">Send failed</p>
 			<p class="text-xs text-red-300">{form.error}</p>
-			{#if form.resendError}
+			{#if "resendError" in form && form.resendError}
 				<pre class="mt-2 text-[11px] text-red-400 whitespace-pre-wrap break-all overflow-auto">{form.resendError}</pre>
 			{/if}
 		</div>

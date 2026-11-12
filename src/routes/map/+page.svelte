@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type { House } from '$lib/types'
 	import Map from '$lib/components/Map.svelte'
+	import type { PageData } from './$types'
 
-	let { data }: { data: { houses: (House & { thumbnail: string | null })[] } } = $props()
+	let { data }: { data: PageData } = $props()
 
 	const mappable = $derived(data.houses.filter((h) => h.latitude != null && h.longitude != null))
 </script>
