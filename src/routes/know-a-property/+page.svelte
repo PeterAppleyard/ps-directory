@@ -22,6 +22,10 @@
 	let formSubmitting = $state(false)
 	let formSubmitted = $state(false)
 
+	// Spam protection: bots fill the hidden field and submit instantly
+	let honeypot = $state('')
+	const formStartedAt = Date.now()
+
 	function extractHouseSlug(input: string): string | null {
 		const trimmed = input.trim()
 		// Extract path segment after /house/
@@ -62,6 +66,11 @@
 		if (!storyText.trim()) err.storyText = 'Please share your story.'
 		formErrors = err
 		if (Object.keys(err).length > 0) return
+		// Quietly "succeed" for bots so they don't retry
+		if (honeypot || Date.now() - formStartedAt < 3000) {
+			formSubmitted = true
+			return
+		}
 		formSubmitting = true
 		const { error } = await supabase.from('property_stories').insert({
 			house_id: theHouse.id,
@@ -71,7 +80,8 @@
 		})
 		formSubmitting = false
 		if (error) {
-			formErrors = { submit: error.message }
+			console.error('Story insert failed:', error)
+			formErrors = { submit: 'Couldn’t save your story. Please try again.' }
 			return
 		}
 		formSubmitted = true
@@ -139,6 +149,11 @@
 				</div>
 
 				<form onsubmit={submitStory} novalidate class="mt-8 space-y-5">
+					<!-- Honeypot: hidden from people and screen readers -->
+					<div class="absolute -left-[9999px] h-px w-px overflow-hidden" aria-hidden="true">
+						<label for="website">Website</label>
+						<input id="website" type="text" tabindex="-1" autocomplete="off" bind:value={honeypot} />
+					</div>
 					<div>
 						<label for="story-author" class="mb-1.5 block text-xs font-bold tracking-normal text-stone-600">
 							Your name <span class="text-red-500">*</span>

@@ -254,6 +254,21 @@
 							</svg>
 							Users
 						</a>
+
+						<!-- Takedowns -->
+						<a
+							href="/admin/takedowns"
+							onclick={closeSidebar}
+							class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition
+								{isActive('/admin/takedowns')
+									? 'bg-slate-700 dark:bg-slate-800 text-white'
+									: 'text-slate-300 hover:bg-slate-700 dark:hover:bg-slate-800 hover:text-white'}"
+						>
+							<svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+							</svg>
+							Takedowns
+						</a>
 					{/if}
 
 					<!-- Settings -->

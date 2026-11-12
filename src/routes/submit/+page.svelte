@@ -6,6 +6,8 @@
 	import { PUBLIC_MAPBOX_TOKEN } from '$env/static/public'
 
 	const CONDITIONS: HouseCondition[] = ['Original', 'Renovated', 'At Risk', 'Demolished']
+	/** Must match MAX_IMAGES_PER_HOUSE in /api/save-image */
+	const MAX_IMAGES = 5
 
 	let { data }: { data: PageData } = $props()
 	const AU_STATES = ['NSW', 'VIC', 'QLD', 'SA', 'WA', 'TAS', 'NT', 'ACT']
@@ -37,7 +39,12 @@
 	let submitError = $state('')
 	let uploadProgress = $state(0)
 	let uploadStatus = $state('') // e.g."Compressing 2 of 3…"
-	let debugInfo: string = $state('')
+	let imageNotice = $state('') // e.g. "Only 5 photos per home"
+	let failedUploads = $state(0) // photos that couldn't be compressed or uploaded
+
+	// Spam protection: bots fill the hidden field and submit instantly
+	let honeypot = $state('')
+	let formStartedAt = Date.now()
 
 	// Image preview URLs (revoked on cleanup)
 	let previews = $derived(imageFiles.map((f) => URL.createObjectURL(f)))
@@ -76,7 +83,10 @@
 	function handleFileChange(e: Event) {
 		const input = e.currentTarget as HTMLInputElement
 		if (!input.files) return
-		const incoming = Array.from(input.files).filter((f) => f.type.startsWith('image/'))
+		const images = Array.from(input.files).filter((f) => f.type.startsWith('image/'))
+		const incoming = images.slice(0, Math.max(0, MAX_IMAGES - imageFiles.length))
+		imageNotice =
+			incoming.length < images.length ? `You can add up to ${MAX_IMAGES} photos per home.` : ''
 		originalSizes = [...originalSizes, ...incoming.map((f) => f.size)]
 		imageFiles = [...imageFiles, ...incoming]
 		input.value = ''
@@ -86,6 +96,7 @@
 		URL.revokeObjectURL(previews[index])
 		imageFiles = imageFiles.filter((_, i) => i !== index)
 		originalSizes = originalSizes.filter((_, i) => i !== index)
+		imageNotice = ''
 	}
 
 	function validate(): boolean {
@@ -117,7 +128,7 @@
 		originalSizes = []
 		errors = {}
 		submitError = ''
-		debugInfo = ''
+		imageNotice = ''
 		uploadProgress = 0
 		uploadStatus = ''
 		latitude = null
@@ -130,7 +141,7 @@
 
 		submitting = true
 		submitError = ''
-		debugInfo = ''
+		failedUploads = 0
 		uploadProgress = 0
 		uploadStatus = ''
 
@@ -154,10 +165,10 @@
 			longitude,
 			listing_url: listingUrl.trim() || null,
 			sold_listing_url: soldListingUrl.trim() || null,
-			submitter_email: submitterEmail.trim() || null
+			submitter_email: submitterEmail.trim() || null,
+			website: honeypot,
+			elapsed_ms: Date.now() - formStartedAt
 		}
-
-		console.log('[Submit] payload:', payload)
 
 		// 1. Insert house record via server-side API (bypasses RLS)
 		const houseRes = await fetch('/api/submit-house', {
@@ -169,10 +180,11 @@
 		const houseJson = await houseRes.json()
 
 		if (!houseRes.ok || !houseJson.id) {
-			const info = { status: houseRes.status, ...houseJson, payload }
-			console.error('[Submit] house insert failed:', info)
-			debugInfo = JSON.stringify(info, null, 2)
-			submitError = 'Failed to save house details. Please try again.'
+			console.error('[Submit] house insert failed:', houseRes.status, houseJson.error)
+			submitError =
+				houseRes.status === 429
+					? 'We’re receiving a lot of submissions right now. Please try again in a little while.'
+					: 'Failed to save house details. Please try again.'
 			submitting = false
 			return
 		}
@@ -186,11 +198,14 @@
 				uploadStatus = `Compressing ${i + 1} of ${imageFiles.length}…`
 				let file: File
 				try {
-					const result = await compressImage(imageFiles[i])
-					file = result.file
-				} catch {
-					// Fall back to original if compression fails
-					file = imageFiles[i]
+					file = (await compressImage(imageFiles[i])).file
+				} catch (err) {
+					// Don't upload the uncompressed original (e.g. a HEIC the browser can't decode) —
+					// it could be many MB and would be mislabelled as WebP
+					console.error(`Could not compress image ${i + 1}:`, err)
+					failedUploads++
+					uploadProgress = Math.round(((i + 1) / imageFiles.length) * 100)
+					continue
 				}
 
 				// Upload
@@ -203,9 +218,10 @@
 
 				if (uploadErr) {
 					console.error(`Failed to upload image ${i + 1}:`, uploadErr)
+					failedUploads++
 				} else {
 					// Save image record via server-side API (bypasses RLS)
-					await fetch('/api/save-image', {
+					const saveRes = await fetch('/api/save-image', {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
 						body: JSON.stringify({
@@ -216,6 +232,7 @@
 							caption: null
 						})
 					})
+					if (!saveRes.ok) failedUploads++
 				}
 
 				uploadProgress = Math.round(((i + 1) / imageFiles.length) * 100)
@@ -225,6 +242,7 @@
 		submitting = false
 		submitted = true
 		resetForm()
+		formStartedAt = Date.now()
 	}
 </script>
 
@@ -248,6 +266,12 @@
 				<p class="mx-auto mt-4 max-w-sm text-stone-500">
 					Your submission is under review and will appear in the directory once verified.
 				</p>
+				{#if failedUploads > 0}
+					<p class="mx-auto mt-4 max-w-sm text-sm text-amber-700" role="status">
+						{failedUploads} photo{failedUploads !== 1 ? 's' : ''} couldn’t be uploaded. Try a JPG or PNG
+						version, or email it to us at hello@psvitt.com with the address.
+					</p>
+				{/if}
 				<div class="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
 					<a
 						href="/"
@@ -499,7 +523,7 @@
 						<span class="text-xs font-bold tracking-normal text-stone-400">
 							Click to add photos
 						</span>
-						<span class="text-xs text-stone-300">JPG, PNG, WEBP — multiple files welcome</span>
+						<span class="text-xs text-stone-300">JPG, PNG, WEBP — up to {MAX_IMAGES} photos</span>
 						<input
 							id="images"
 							type="file"
@@ -531,7 +555,7 @@
 								<button
 									type="button"
 									onclick={() => removeImage(i)}
-									class="absolute right-1 top-1 flex h-6 w-6 items-center justify-center bg-stone-900 text-white opacity-0 transition group-hover:opacity-100"
+									class="absolute right-1 top-1 flex h-6 w-6 items-center justify-center bg-stone-900 text-white transition focus:opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
 									aria-label="Remove image"
 								>
 									<svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
@@ -545,7 +569,16 @@
 						{imageFiles.length} photo{imageFiles.length !== 1 ? 's' : ''} selected — images will be compressed to WebP before upload.
 					</p>
 				{/if}
+				{#if imageNotice}
+					<p class="text-xs text-amber-700" role="status">{imageNotice}</p>
+				{/if}
 				</fieldset>
+
+				<!-- Honeypot: hidden from people and screen readers; bots tend to fill every field -->
+				<div class="absolute -left-[9999px] h-px w-px overflow-hidden" aria-hidden="true">
+					<label for="website">Website</label>
+					<input id="website" name="website" type="text" tabindex="-1" autocomplete="off" bind:value={honeypot} />
+				</div>
 
 				<!-- Upload progress -->
 			{#if submitting && imageFiles.length > 0}
@@ -564,12 +597,6 @@
 				<p class="border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">{submitError}</p>
 			{/if}
 
-			{#if debugInfo}
-				<div class="border border-orange-300 bg-orange-50 p-4">
-					<p class="mb-2 text-[10px] font-bold tracking-normal text-orange-600">Debug Info</p>
-					<pre class="overflow-auto text-[11px] text-orange-900 whitespace-pre-wrap break-all">{debugInfo}</pre>
-				</div>
-			{/if}
 
 				<button
 					type="submit"

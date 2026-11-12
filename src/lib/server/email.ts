@@ -106,3 +106,46 @@ export async function sendStatusUpdateEmail(opts: {
 
 	if (error) console.error('[email] Status update send failed:', error.message)
 }
+
+const TAKEDOWN_LABELS: Record<string, string> = {
+	full_removal: 'Remove the listing entirely',
+	image_removal: 'Remove images',
+	address_removal: 'Remove or hide the address'
+}
+
+export async function sendTakedownEmail(opts: {
+	to: string[]
+	requestType: string
+	house: string
+	requesterName: string
+	requesterEmail: string
+	reason: string | null
+	siteUrl: string
+}) {
+	if (!RESEND_API_KEY || opts.to.length === 0) {
+		if (!RESEND_API_KEY) console.warn('[email] Skipped: RESEND_API_KEY not set')
+		return
+	}
+
+	const bodyHtml = `
+		<p style="color: #111;"><strong>New takedown request</strong> — please action promptly.</p>
+		<p style="color: #111;">
+			<strong>Request:</strong> ${escapeHtml(TAKEDOWN_LABELS[opts.requestType] ?? opts.requestType)}<br/>
+			<strong>Listing:</strong> ${escapeHtml(opts.house)}<br/>
+			<strong>From:</strong> ${escapeHtml(opts.requesterName)} &lt;${escapeHtml(opts.requesterEmail)}&gt;
+		</p>
+		${opts.reason ? `<p style="color: #555; white-space: pre-wrap;">${escapeHtml(opts.reason)}</p>` : ''}
+		<p><a href="${opts.siteUrl}/admin/takedowns" style="color: #000; font-weight: bold;">View takedown requests →</a></p>
+	`
+
+	const { error } = await getResend().emails.send({
+		from: FROM,
+		// Reply goes straight to the person who asked
+		replyTo: opts.requesterEmail,
+		to: opts.to,
+		subject: `Takedown request: ${opts.house.slice(0, 80)}`,
+		html: renderEmailLayout({ bodyHtml, siteUrl: opts.siteUrl })
+	})
+
+	if (error) console.error('[email] Takedown notify failed:', error.message)
+}

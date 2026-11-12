@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { supabase } from '$lib/supabase'
-
 	type RequestType = 'full_removal' | 'image_removal' | 'address_removal'
 
 	let requestType = $state<RequestType | ''>('')
@@ -11,6 +9,10 @@
 	let errors = $state<Record<string, string>>({})
 	let submitting = $state(false)
 	let submitted = $state(false)
+
+	// Spam protection: bots fill the hidden field and submit instantly
+	let honeypot = $state('')
+	const formStartedAt = Date.now()
 
 	function validate(): boolean {
 		const e: Record<string, string> = {}
@@ -29,19 +31,31 @@
 		if (!validate()) return
 		submitting = true
 		errors = {}
-		const { error } = await supabase.from('takedown_requests').insert({
-			request_type: requestType,
-			house_address: houseAddressOrUrl.trim() || null,
-			requester_name: requesterName.trim(),
-			requester_email: requesterEmail.trim(),
-			reason: reason.trim() || null
-		})
-		submitting = false
-		if (error) {
-			errors.submit = error.message
-			return
+		try {
+			const res = await fetch('/api/takedown', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					request_type: requestType,
+					house_address: houseAddressOrUrl.trim(),
+					requester_name: requesterName.trim(),
+					requester_email: requesterEmail.trim(),
+					reason: reason.trim(),
+					website: honeypot,
+					elapsed_ms: Date.now() - formStartedAt
+				})
+			})
+			if (!res.ok) {
+				const json = await res.json().catch(() => ({}))
+				errors.submit = json.error ?? 'Could not send your request. Please email hello@psvitt.com.'
+				return
+			}
+			submitted = true
+		} catch {
+			errors.submit = 'Could not send your request. Please check your connection and try again.'
+		} finally {
+			submitting = false
 		}
-		submitted = true
 	}
 </script>
 
@@ -86,6 +100,11 @@
 				</div>
 			{:else}
 				<form onsubmit={handleSubmit} novalidate class="space-y-8">
+					<!-- Honeypot: hidden from people and screen readers -->
+					<div class="absolute -left-[9999px] h-px w-px overflow-hidden" aria-hidden="true">
+						<label for="website">Website</label>
+						<input id="website" type="text" tabindex="-1" autocomplete="off" bind:value={honeypot} />
+					</div>
 					<fieldset class="space-y-4">
 						<legend class="w-full border-b border-stone-200 pb-2 text-[10px] font-bold tracking-normal text-stone-400">
 							Type of request <span class="text-red-500">*</span>
