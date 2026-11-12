@@ -1,4 +1,5 @@
 import { fail, redirect } from '@sveltejs/kit'
+import { hasRole } from '$lib/server/auth'
 import { Resend } from 'resend'
 import { RESEND_API_KEY, RESEND_FROM_EMAIL } from '$env/static/private'
 import { env } from '$env/dynamic/private'
@@ -18,7 +19,10 @@ export const load: PageServerLoad = async ({ locals }) => {
 }
 
 export const actions: Actions = {
-	send: async ({ request, url }) => {
+	send: async ({ request, url, locals }) => {
+		// Without this anyone could make the site send email to any address
+		if (!hasRole(locals.role, 'admin')) return fail(403, { error: 'Unauthorized' })
+
 		const form = await request.formData()
 		const to = (form.get('to') as string)?.trim()
 

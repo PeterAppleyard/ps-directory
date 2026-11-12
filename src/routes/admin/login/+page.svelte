@@ -25,6 +25,12 @@
 			</div>
 		{/if}
 
+		{#if data.denied}
+			<div class="mb-6 border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-700" role="alert">
+				This account doesn’t have admin access. Ask an administrator to invite you.
+			</div>
+		{/if}
+
 		{#if mode === 'login'}
 			<!-- ── Login form ── -->
 			<form method="POST" action="?/login" use:enhance class="space-y-5">

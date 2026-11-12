@@ -4,7 +4,8 @@ import type { Actions, PageServerLoad } from './$types'
 export const load: PageServerLoad = async ({ locals, url }) => {
 	if (locals.user) redirect(303, '/admin')
 	const linkExpired = url.searchParams.get('error') === 'link_expired'
-	return { linkExpired }
+	const denied = url.searchParams.get('denied') === '1'
+	return { linkExpired, denied }
 }
 
 export const actions: Actions = {

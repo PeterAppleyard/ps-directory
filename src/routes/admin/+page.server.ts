@@ -1,21 +1,16 @@
 import { supabaseAdmin } from '$lib/supabase-admin'
+import { tidySuburb } from '$lib/utils/text'
+import { hasRole } from '$lib/server/auth'
 import { sendStatusUpdateEmail } from '$lib/server/email'
 import { fail, redirect } from '@sveltejs/kit'
 import type { Actions, PageServerLoad } from './$types'
 import type { House, Image, HouseStyleRecord, PropertyStory } from '$lib/types'
 
-function requireRole(
-	role: App.Locals['role'],
-	minimum: 'superuser' | 'admin' | 'super_admin'
-): boolean {
-	const levels = { superuser: 1, admin: 2, super_admin: 3 }
-	return (levels[role ?? 'superuser'] ?? 0) >= levels[minimum]
-}
 
 export const load: PageServerLoad = async ({ locals }) => {
 	if (!locals.user) redirect(303, '/admin/login')
 
-	const isAdmin = requireRole(locals.role, 'admin')
+	const isAdmin = hasRole(locals.role, 'admin')
 
 	// Run all independent queries in parallel
 	const [pendingResult, publishedResult, stylesResult, storiesResult] = await Promise.all([
@@ -83,7 +78,7 @@ export const actions: Actions = {
 	},
 
 	approve: async ({ request, locals, url }) => {
-		if (!requireRole(locals.role, 'admin')) return fail(403, { error: 'Unauthorized' })
+		if (!hasRole(locals.role, 'admin')) return fail(403, { error: 'Unauthorized' })
 
 		const form = await request.formData()
 		const id = form.get('id') as string
@@ -115,7 +110,7 @@ export const actions: Actions = {
 	},
 
 	reject: async ({ request, locals, url }) => {
-		if (!requireRole(locals.role, 'admin')) return fail(403, { error: 'Unauthorized' })
+		if (!hasRole(locals.role, 'admin')) return fail(403, { error: 'Unauthorized' })
 
 		const form = await request.formData()
 		const id = form.get('id') as string
@@ -147,7 +142,7 @@ export const actions: Actions = {
 	},
 
 	approveStory: async ({ request, locals }) => {
-		if (!requireRole(locals.role, 'admin')) return fail(403, { error: 'Unauthorized' })
+		if (!hasRole(locals.role, 'admin')) return fail(403, { error: 'Unauthorized' })
 
 		const form = await request.formData()
 		const id = form.get('id') as string
@@ -165,7 +160,7 @@ export const actions: Actions = {
 	},
 
 	deleteHouse: async ({ request, locals }) => {
-		if (!requireRole(locals.role, 'admin')) return fail(403, { error: 'Unauthorized' })
+		if (!hasRole(locals.role, 'admin')) return fail(403, { error: 'Unauthorized' })
 
 		const form = await request.formData()
 		const id = form.get('id') as string
@@ -196,7 +191,7 @@ export const actions: Actions = {
 	},
 
 	deleteImage: async ({ request, locals }) => {
-		if (!requireRole(locals.role, 'superuser')) return fail(403, { error: 'Unauthorized' })
+		if (!hasRole(locals.role, 'superuser')) return fail(403, { error: 'Unauthorized' })
 
 		const form = await request.formData()
 		const imageId = form.get('image_id') as string
@@ -213,7 +208,7 @@ export const actions: Actions = {
 	},
 
 	addStyle: async ({ request, locals }) => {
-		if (!requireRole(locals.role, 'superuser')) return fail(403, { error: 'Unauthorized' })
+		if (!hasRole(locals.role, 'superuser')) return fail(403, { error: 'Unauthorized' })
 
 		const form = await request.formData()
 		const name = (form.get('name') as string)?.trim()
@@ -250,7 +245,7 @@ export const actions: Actions = {
 	},
 
 	deleteStyle: async ({ request, locals }) => {
-		if (!requireRole(locals.role, 'admin')) return fail(403, { error: 'Unauthorized' })
+		if (!hasRole(locals.role, 'admin')) return fail(403, { error: 'Unauthorized' })
 
 		const form = await request.formData()
 		const id = form.get('id') as string
@@ -284,7 +279,7 @@ export const actions: Actions = {
 	},
 
 	setFeatured: async ({ request, locals }) => {
-		if (!requireRole(locals.role, 'admin')) return fail(403, { error: 'Unauthorized' })
+		if (!hasRole(locals.role, 'admin')) return fail(403, { error: 'Unauthorized' })
 
 		const form = await request.formData()
 		const id = form.get('id') as string
@@ -306,7 +301,7 @@ export const actions: Actions = {
 	},
 
 	edit: async ({ request, locals }) => {
-		if (!requireRole(locals.role, 'superuser')) return fail(403, { error: 'Unauthorized' })
+		if (!hasRole(locals.role, 'superuser')) return fail(403, { error: 'Unauthorized' })
 
 		const form = await request.formData()
 		const id = form.get('id') as string
@@ -321,7 +316,7 @@ export const actions: Actions = {
 			.from('houses')
 			.update({
 				address_street: (form.get('address_street') as string).trim(),
-				address_suburb: (form.get('address_suburb') as string).trim(),
+				address_suburb: tidySuburb(form.get('address_suburb') as string),
 				address_state: form.get('address_state') as string,
 				address_postcode: (form.get('address_postcode') as string).trim(),
 				style: (form.get('style') as string) || null,

@@ -12,6 +12,12 @@ export const load: LayoutServerLoad = async ({ locals, url }) => {
 		redirect(303, '/admin/login')
 	}
 
+	// Signed in but not given a role by an admin — not allowed in
+	if (!locals.role) {
+		await locals.supabase.auth.signOut()
+		redirect(303, '/admin/login?denied=1')
+	}
+
 	return {
 		user: { email: locals.user.email },
 		role: locals.role,
