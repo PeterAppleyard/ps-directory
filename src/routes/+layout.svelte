@@ -123,8 +123,23 @@
 	</div>
 
 	{#if !page.url.pathname.startsWith('/admin')}
-	<footer class="border-t-2 border-stone-900 bg-white px-6 py-8">
-		<div class="mx-auto flex max-w-6xl items-center justify-between">
+	<footer class="border-t-2 border-stone-900 bg-white">
+		<!-- Acknowledgement of Country -->
+		<section aria-labelledby="acknowledgement-heading" class="ink-hero border-t border-[#faf2e5]/20 px-6 py-12 md:py-16">
+			<div class="mx-auto max-w-6xl">
+				<h2 id="acknowledgement-heading" class="text-[10px] font-bold tracking-normal text-[#faf2e5]/60">
+					Acknowledgement of Country
+				</h2>
+				<p class="mt-4 max-w-2xl text-base leading-relaxed text-[#faf2e5] md:text-lg">
+					PS Archive acknowledges the Traditional Custodians of the lands on which these homes
+					stand. This archive is kept in West Pymble, on the land of the Darramuragal people.
+					We pay our respects to Elders past and present, and recognise their continuing
+					connection to land, waters and community.
+				</p>
+			</div>
+		</section>
+
+		<div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-6 py-8">
 			<p class="text-[10px] tracking-normal text-stone-400">
 				PS Archive
 			</p>
