@@ -8,6 +8,22 @@
 **Action**: Remove this tag when site is ready for public launch and dummy content has been replaced with real data.
 **Why it's there**: Site has placeholder/WIP content and sparse house listings — not ready to be indexed.
 
+### 🔴 Run the database migrations (after deploying the code)
+**Status**: Waiting on owner — SQL is written, not yet run
+**Files**: `supabase/migrations/` — run in order in the Supabase SQL editor, **after** the matching code is live:
+1. `20261002_restrict_public_house_columns.sql` — hides submitter emails, review notes and user IDs from the public API
+2. `20261112_public_input_limits.sql` — stories can only be inserted as pending, takedowns go through the server, WebP-only 3 MB cap on the image bucket
+
+### 🔴 Clean up test data
+**Status**: Waiting on owner
+**File**: `supabase/maintenance/data_cleanup.sql` — finds duplicate suburbs spellings and duplicate/test listings. Delete test listings from the admin dashboard so their photos are removed too.
+
+### 🟠 Separate dev database
+`.env.local` points at the live Supabase project, so anything submitted locally is real. Create a second free-tier project for development.
+
+### 🟠 Restrict the Mapbox token
+In the Mapbox dashboard, limit the public token to `psvitt.com` and `localhost`.
+
 ---
 
 ## 🔥 Immediate Priorities (This Week)
@@ -187,9 +203,9 @@
 **Priority**: MEDIUM
 
 **Tasks**:
-- [ ] **Add pagination to house list** — currently fetches all records; needs 20–30 per page before launch (HIGH once house count grows)
-- [ ] Implement image lazy loading
-- [ ] Optimize database queries (only fetch needed columns)
+- [x] **Pagination on house list** — search/suburb/style filtered in the database, 18 cards per request (`src/lib/houses.ts`, Nov 2026)
+- [x] Image lazy loading on cards
+- [x] Public queries fetch only the columns they need
 - [ ] Add caching headers
 - [ ] Minimize JavaScript bundle
 - [ ] Run Lighthouse audits and address issues
@@ -205,8 +221,8 @@
 **Priority**: LOW (initially)
 
 **Tasks**:
-- [ ] Configure Vitest
-- [ ] Write unit tests for utility functions
+- [x] Configure Vitest — `npx vitest run --project server`
+- [x] Unit tests for slug, text and role helpers
 - [ ] Component tests for key interactions
 - [ ] E2E tests with Playwright
 - [ ] Setup CI/CD pipeline
@@ -294,15 +310,22 @@
 ## 🐛 Known Issues
 
 ### Current Bugs
-1. No pagination on house list — will become a performance issue as data grows
-2. No loading indicators on data fetch (homepage)
-3. No error handling for failed Supabase queries
-4. ~~Slug DB migration~~ — ✅ done, `slug` column live and backfilled
+1. `src/routes/admin/+page.svelte` is ~1,300 lines with state shared across tabs — split into components (pending, published, quick add, styles). Needs someone signed in to admin to test it.
+2. Homepage map view and `/map` load every published pin at once — fine into the low thousands.
+
+### Fixed Nov 2026
+- Private house columns exposed through the public API (needs migration 1 above)
+- `/admin` open to any signed-in user without a role; `/admin/test-email` send had no auth
+- `/api/save-image` let anyone attach images to any house
+- Stories could be inserted pre-approved via the API (needs migration 2 above)
+- Takedown requests were stored but nobody was notified — now emailed to admins, listed at `/admin/takedowns`
+- Reply-to missing from emails (`reply_to` → `replyTo`), user text unescaped in email HTML
+- Submit form: debug panel and payload logging removed; failed compression no longer uploads the original
 
 ### Technical Debt
 - [ ] Add error boundaries
 - [ ] Implement proper logging
-- [ ] Add rate limiting on submissions
+- [x] Spam protection on public forms — honeypot, minimum fill time, 20 pending/hour circuit breaker (not per-IP; add Cloudflare Turnstile if abuse appears)
 - [ ] Better TypeScript coverage
 - [ ] Add JSDoc comments to complex functions
 - [ ] Refactor duplicated code

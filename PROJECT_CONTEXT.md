@@ -112,7 +112,7 @@ PUBLIC_SUPABASE_ANON_KEY=<your_key>
 - [x] About page — verified editorial content, Pete's personal note
 - [x] PSA logo SVG in header; full-width nav; dark hero on home + about
 - [x] Admin optimistic UI — near-instant actions, no full reload
-- [ ] Pagination on house list — **still needed before heavy use**
+- [x] Pagination on house list — filtered and paged in the database (Nov 2026)
 - [ ] "Near Me" discovery (location-based filtering) — future
 
 ### Phase 3 - Community Features
@@ -274,7 +274,7 @@ PUBLIC_SUPABASE_ANON_KEY=<your_key>
 - [x] Geocoding: Mapbox Geocoding API used in QuickAdd and submission form
 - [x] Image compression: Client-side Canvas API → WebP, <500KB
 - [x] Search: Client-side filter on loaded houses (sufficient for current scale)
-- [ ] Pagination: Still needed as house count grows
+- [x] Pagination: done — database-side filtering, 18 cards per request
 
 ### Content
 - [ ] How to verify a house is actually P&S? (Checklist of features?)
@@ -293,7 +293,7 @@ PUBLIC_SUPABASE_ANON_KEY=<your_key>
 
 ## Next Steps Priority
 
-1. **Add pagination to house list** — most pressing technical gap before heavy use
+1. **Run the two SQL migrations in `supabase/migrations/`** after deploying — see TASKS.md
 3. **Seed data** — source 50–100 initial houses (owner)
 4. **About/History content** — page exists, needs copy (owner)
 5. **Soft launch to Facebook group** — get feedback, drive initial submissions
