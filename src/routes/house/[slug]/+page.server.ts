@@ -3,10 +3,10 @@ import { PUBLIC_HOUSE_COLUMNS, publicImageUrl } from '$lib/houses'
 import { error, redirect } from '@sveltejs/kit'
 import { isUUID } from '$lib/utils/slug'
 import { stripStreetNumber } from '$lib/utils/compress'
-import type { PageLoad } from './$types'
+import type { PageServerLoad } from './$types'
 import type { Image, PropertyStory, PublicHouse } from '$lib/types'
 
-export const load: PageLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ params }) => {
 	const param = params.slug
 
 	// Backward compatibility: if param is a UUID, look up the house and redirect to its slug URL

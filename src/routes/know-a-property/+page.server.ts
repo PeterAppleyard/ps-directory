@@ -2,12 +2,12 @@ import { supabase } from '$lib/supabase'
 import { isUUID } from '$lib/utils/slug'
 import { PUBLIC_HOUSE_COLUMNS } from '$lib/houses'
 import type { PublicHouse } from '$lib/types'
-import type { PageLoad } from './$types'
+import type { PageServerLoad } from './$types'
 
 /** Know a property — public page; user finds a house (via ?house=slug) then submits a story. */
 const meta = { title: 'Know a Property?', description: 'Lived in or grew up in a Pettit & Sevitt home? Share your memories of it with the archive.' }
 
-export const load: PageLoad = async ({ url }) => {
+export const load: PageServerLoad = async ({ url }) => {
 	const houseParam = url.searchParams.get('house')
 	if (!houseParam) return { house: null as PublicHouse | null, meta }
 

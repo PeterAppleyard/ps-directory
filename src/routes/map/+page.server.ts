@@ -1,8 +1,8 @@
 import { error } from '@sveltejs/kit'
 import { fetchMapHouses } from '$lib/houses'
-import type { PageLoad } from './$types'
+import type { PageServerLoad } from './$types'
 
-export const load: PageLoad = async () => {
+export const load: PageServerLoad = async () => {
 	try {
 		return {
 			houses: await fetchMapHouses({ q: '', suburb: '', style: '' }),

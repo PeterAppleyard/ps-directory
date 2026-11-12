@@ -1,8 +1,8 @@
 import { error } from '@sveltejs/kit'
 import { fetchFilterOptions, fetchHousePage, fetchMapHouses, filtersFromUrl } from '$lib/houses'
-import type { PageLoad } from './$types'
+import type { PageServerLoad } from './$types'
 
-export const load: PageLoad = async ({ url }) => {
+export const load: PageServerLoad = async ({ url }) => {
 	const filters = filtersFromUrl(url)
 	const view = url.searchParams.get('view') === 'map' ? 'map' : 'grid'
 
