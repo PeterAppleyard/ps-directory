@@ -1,9 +1,19 @@
 <script lang="ts">
 	import './layout.css'
 	import favicon from '$lib/assets/favicon.svg'
-	import { page, navigating } from '$app/stores'
+	import { page, navigating } from '$app/state'
 
 	let { children, data } = $props()
+
+	const SITE_NAME = 'PS Archive'
+	const DEFAULT_TITLE = 'PS Archive — A Pettit & Sevitt Directory'
+	const DEFAULT_DESCRIPTION =
+		'An independent, community-built register of Pettit & Sevitt project homes — the mid-century modern houses of Sydney and beyond.'
+
+	const meta = $derived(page.data.meta ?? {})
+	const title = $derived(meta.title ? `${meta.title} — ${SITE_NAME}` : DEFAULT_TITLE)
+	const description = $derived(meta.description ?? DEFAULT_DESCRIPTION)
+	const canonical = $derived(page.url.origin + page.url.pathname)
 
 	const navLinks = [
 		{ href: '/', label: 'Home' },
@@ -17,7 +27,7 @@
 	let progressVisible = $state(false)
 
 	$effect(() => {
-		if ($navigating) {
+		if (navigating.to) {
 			progressVisible = true
 			progressWidth = 0
 			// Small delay so the transition fires
@@ -34,7 +44,20 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
-	<title>PS Archive — A Pettit &amp; Sevitt Directory</title>
+	<title>{title}</title>
+	<meta name="description" content={description} />
+	<link rel="canonical" href={canonical} />
+	<meta property="og:site_name" content={SITE_NAME} />
+	<meta property="og:type" content="website" />
+	<meta property="og:title" content={meta.title ?? DEFAULT_TITLE} />
+	<meta property="og:description" content={description} />
+	<meta property="og:url" content={canonical} />
+	{#if meta.image}
+		<meta property="og:image" content={meta.image} />
+		<meta name="twitter:card" content="summary_large_image" />
+	{:else}
+		<meta name="twitter:card" content="summary" />
+	{/if}
 	<!-- TODO: REMOVE BEFORE LAUNCH — site is work in progress, dummy content present -->
 	<meta name="robots" content="noindex, nofollow" />
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -51,7 +74,7 @@
 {/if}
 
 <div class="flex min-h-screen flex-col">
-	{#if !$page.url.pathname.startsWith('/admin')}
+	{#if !page.url.pathname.startsWith('/admin')}
 	<header class="border-b-2 border-stone-900 bg-[#faf2e5]">
 		<div class="flex items-center justify-between px-8 py-5">
 			<!-- Logo -->
@@ -68,7 +91,7 @@
 							<a
 								href={link.href}
 								class="text-[10px] font-bold tracking-normal transition-colors
-									{$page.url.pathname === link.href
+									{page.url.pathname === link.href
 										? 'text-accent underline underline-offset-4 decoration-2 decoration-accent'
 										: 'text-stone-400 hover:text-stone-900'}"
 							>
@@ -81,7 +104,7 @@
 							<a
 								href="/admin"
 								class="text-[10px] font-bold tracking-normal transition-colors
-									{$page.url.pathname.startsWith('/admin')
+									{page.url.pathname.startsWith('/admin')
 										? 'text-accent underline underline-offset-4 decoration-2 decoration-accent'
 										: 'text-stone-400 hover:text-stone-900'}"
 							>
@@ -99,7 +122,7 @@
 		{@render children()}
 	</div>
 
-	{#if !$page.url.pathname.startsWith('/admin')}
+	{#if !page.url.pathname.startsWith('/admin')}
 	<footer class="border-t-2 border-stone-900 bg-white px-6 py-8">
 		<div class="mx-auto flex max-w-6xl items-center justify-between">
 			<p class="text-[10px] tracking-normal text-stone-400">

@@ -9,6 +9,10 @@ export const load: PageLoad = async () => {
 		.order('sort_order')
 
 	return {
-		styles: (data ?? []) as HouseStyleRecord[]
+		styles: (data ?? []) as HouseStyleRecord[],
+		meta: {
+			title: 'Submit a Home',
+			description: 'Know a Pettit & Sevitt home? Add it to the archive — every submission is reviewed before publishing.'
+		}
 	}
 }

@@ -2,6 +2,7 @@ import { supabase } from '$lib/supabase'
 import { PUBLIC_HOUSE_COLUMNS, publicImageUrl } from '$lib/houses'
 import { error, redirect } from '@sveltejs/kit'
 import { isUUID } from '$lib/utils/slug'
+import { stripStreetNumber } from '$lib/utils/compress'
 import type { PageLoad } from './$types'
 import type { Image, PropertyStory, PublicHouse } from '$lib/types'
 
@@ -58,5 +59,28 @@ export const load: PageLoad = async ({ params }) => {
 		.eq('status', 'approved')
 		.order('created_at', { ascending: true })
 
-	return { house: house as PublicHouse, images: imagesWithUrls, stories: (stories ?? []) as PropertyStory[] }
+	const h = house as PublicHouse
+	const primary = imagesWithUrls.find((img) => img.is_primary) ?? imagesWithUrls[0]
+
+	return {
+		house: h,
+		images: imagesWithUrls,
+		stories: (stories ?? []) as PropertyStory[],
+		meta: {
+			title: [stripStreetNumber(h.address_street), h.address_suburb].filter(Boolean).join(', '),
+			description: describeHouse(h),
+			image: primary?.url
+		}
+	}
+}
+
+/** One-sentence summary for search results and link previews (no street number, matching the cards). */
+function describeHouse(h: PublicHouse): string {
+	const kind = h.style && h.style !== 'Other' ? `${h.style} ` : ''
+	const built = h.year_built ? `, built ${h.year_built}` : ''
+	const summary = `A ${kind}Pettit & Sevitt home in ${h.address_suburb}${built}.`
+	if (!h.description) return summary
+	const extra = h.description.replace(/\s+/g, ' ').trim()
+	const full = `${summary} ${extra}`
+	return full.length > 160 ? full.slice(0, 157).replace(/\s+\S*$/, '') + '…' : full
 }

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores'
+	import { page } from '$app/state'
 	import { enhance } from '$app/forms'
 	import type { LayoutData } from './$types'
 
@@ -55,7 +55,7 @@
 	const isSuperAdmin = $derived(data.role === 'super_admin')
 
 	function isActive(path: string) {
-		return $page.url.pathname === path
+		return page.url.pathname === path
 	}
 
 	function closeSidebar() {

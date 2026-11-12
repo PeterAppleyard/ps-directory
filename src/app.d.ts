@@ -2,6 +2,15 @@ import type { SupabaseClient, User } from '@supabase/supabase-js'
 
 declare global {
 	namespace App {
+		/** Optional per-page SEO/share metadata, rendered by the root layout. */
+		interface PageData {
+			meta?: {
+				title?: string
+				description?: string
+				/** Absolute URL of the share-preview image */
+				image?: string
+			}
+		}
 		interface Locals {
 			supabase: SupabaseClient
 			user: User | null

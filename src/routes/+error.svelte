@@ -1,19 +1,19 @@
 <script lang="ts">
-	import { page } from '$app/stores'
+	import { page } from '$app/state'
 </script>
 
 <main class="flex min-h-[80vh] flex-col items-center justify-center px-6 text-center">
 	<p class="text-[10px] font-bold tracking-normal text-stone-400">
-		Error {$page.status}
+		Error {page.status}
 	</p>
 	<h1
 		class="mt-4 font-black leading-none tracking-tight text-stone-900"
 		style="font-size: clamp(5rem, 20vw, 16rem); line-height: 0.9;"
 	>
-		{$page.status}
+		{page.status}
 	</h1>
 	<p class="mt-8 max-w-sm text-sm text-stone-500">
-		{$page.error?.message ?? 'Something went wrong. Please try again.'}
+		{page.error?.message ?? 'Something went wrong. Please try again.'}
 	</p>
 	<div class="mt-10 flex flex-wrap justify-center gap-4">
 		<a
