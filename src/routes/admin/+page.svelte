@@ -204,7 +204,7 @@
 				}
 
 				const isPrimary = existingCount + i === 0
-				await fetch('/api/save-image', {
+				const saveRes = await fetch('/api/save-image', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({
@@ -215,13 +215,19 @@
 						caption: null
 					})
 				})
+				const saved = await saveRes.json().catch(() => ({}))
+				if (!saveRes.ok || !saved.id) {
+					imgUploadError[houseId] = saved.error ?? 'Could not save image — try again.'
+					continue
+				}
 
 				const publicUrl = supabase.storage.from('house-images').getPublicUrl(path).data.publicUrl
 				if (!localImages[houseId]) localImages[houseId] = []
 				localImages[houseId] = [
 					...localImages[houseId],
 					{
-						id: crypto.randomUUID(),
+						// Real row id, so Delete works without a page refresh
+						id: saved.id,
 						house_id: houseId,
 						storage_path: path,
 						is_primary: isPrimary,

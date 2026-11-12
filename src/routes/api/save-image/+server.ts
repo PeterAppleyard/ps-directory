@@ -45,18 +45,18 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		return json({ error: `A submission can have at most ${MAX_IMAGES_PER_HOUSE} images` }, { status: 400 })
 	}
 
-	const { error } = await supabaseAdmin.from('images').insert({
+	const { data: image, error } = await supabaseAdmin.from('images').insert({
 		house_id,
 		storage_path,
 		is_primary: is_primary === true,
 		sort_order: Number.isInteger(sort_order) ? sort_order : 0,
 		caption: null
-	})
+	}).select('id').single()
 
-	if (error) {
+	if (error || !image) {
 		console.error('[save-image] DB error:', error)
 		return json({ error: 'Could not save image' }, { status: 500 })
 	}
 
-	return json({ ok: true })
+	return json({ ok: true, id: image.id })
 }
